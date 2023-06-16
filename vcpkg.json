@@ -1,0 +1,19 @@
+{
+  "name": "grace",
+  "license": "MIT",
+  "version-semver": "0.1.0",
+  "maintainers": [
+    "albin-johansson"
+  ],
+  "builtin-baseline": "217194cea7e3491c14779c763beec50b6a4575d6",
+  "dependencies": [
+    "vulkan",
+    "vulkan-memory-allocator",
+    {
+      "name": "sdl2",
+      "features": [
+        "vulkan"
+      ]
+    }
+  ]
+}
