@@ -6,8 +6,6 @@
 #include <SDL2/SDL_vulkan.h>
 #endif  // GRACE_USE_SDL2
 
-#include "grace/context.hpp"
-
 namespace grace {
 
 Surface::Surface(VkInstance instance, VkSurfaceKHR surface)
