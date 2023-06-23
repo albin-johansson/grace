@@ -48,3 +48,95 @@ jobs:
       - name: Run tests
         working-directory: ./build/tests
         run: ./grace-tests
+
+  ubuntu-latest-ci:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, '[skip-ci]') == false
+    env:
+      VCPKG_ROOT: ${{github.workspace}}/vcpkg
+      VCPKG_TARGET_TRIPLET: x64-linux
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install system dependencies
+        run: |
+          sudo apt install ninja-build
+
+      - name: Install Vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg
+          ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
+
+      - name: Install Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1.2.0
+        with:
+          vulkan-query-version: 1.3.204.0
+          vulkan-components: Vulkan-Headers, Vulkan-Loader
+          vulkan-use-cache: true
+
+      - name: Generate build files
+        run: |
+          mkdir build && cd build
+          cmake .. -GNinja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}} \
+            -DGRACE_USE_VULKAN_SUBSET=OFF \
+            -DGRACE_USE_SDL2=ON \
+            -DGRACE_ENABLE_DEMO=ON \
+            -DGRACE_ENABLE_TESTS=ON
+
+      - name: Build
+        run: ninja -C build
+
+      - name: Run tests
+        working-directory: ./build/tests
+        run: ./grace-tests
+
+  windows-latest-ci:
+    runs-on: windows-latest
+    if: contains(github.event.head_commit.message, '[skip-ci]') == false
+    env:
+      VCPKG_ROOT: ${{github.workspace}}/vcpkg
+      VCPKG_TARGET_TRIPLET: x64-windows-static-md
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Configure compiler
+        uses: ilammy/msvc-dev-cmd@v1.11.0
+
+      - name: Install CMake and Ninja
+        uses: lukka/get-cmake@latest
+
+      - name: Install Vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg
+          .\vcpkg\bootstrap-vcpkg.bat -disableMetrics
+
+      - name: Install Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1.2.0
+        with:
+          vulkan-query-version: 1.3.204.0
+          vulkan-components: Vulkan-Headers, Vulkan-Loader
+          vulkan-use-cache: true
+
+      - name: Generate build files
+        run: |
+          mkdir build && cd build
+          cmake .. -GNinja `
+            -DCMAKE_BUILD_TYPE=Debug `
+            -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}} `
+            -DGRACE_USE_VULKAN_SUBSET=OFF `
+            -DGRACE_USE_SDL2=ON `
+            -DGRACE_ENABLE_DEMO=ON `
+            -DGRACE_ENABLE_TESTS=ON
+
+      - name: Build
+        run: ninja -C build
+
+      - name: Run tests
+        working-directory: ./build/tests
+        run: grace-tests.exe
