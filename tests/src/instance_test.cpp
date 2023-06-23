@@ -3,6 +3,8 @@
 #include <doctest/doctest.h>
 #include <vulkan/vulkan.h>
 
+#include "grace/extras/window.hpp"
+
 TEST_SUITE("Instance")
 {
   TEST_CASE("make_application_info")
@@ -40,4 +42,36 @@ TEST_SUITE("Instance")
     CHECK(instance_info.flags == 0);
 #endif  // GRACE_USE_VULKAN_SUBSET
   }
+
+  TEST_CASE("make_instance")
+  {
+    const std::vector<const char*> layers;
+    std::vector<const char*> extensions;
+
+#ifdef GRACE_USE_VULKAN_SUBSET
+    extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+#endif  // GRACE_USE_VULKAN_SUBSET
+
+    auto [instance, instance_status] = grace::make_instance("Tests", layers, extensions);
+
+    CHECK(instance_status == VK_SUCCESS);
+    CHECK(instance != nullptr);
+  }
+
+#ifdef GRACE_USE_SDL2
+
+  TEST_CASE("make_instance with get_required_instance_extensions")
+  {
+    auto window = grace::make_window("Test", 800, 600);
+
+    const std::vector layers = {"VK_LAYER_KHRONOS_validation"};
+    const auto extensions = grace::get_required_instance_extensions(window.get());
+
+    auto [instance, instance_status] = grace::make_instance("Tests", layers, extensions);
+
+    CHECK(instance_status == VK_SUCCESS);
+    CHECK(instance != nullptr);
+  }
+
+#endif  // GRACE_USE_SDL2
 }

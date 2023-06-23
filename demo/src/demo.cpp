@@ -4,17 +4,18 @@
 
 #include <vulkan/vulkan.h>
 
-#include "demo_setup.hpp"
+#include "grace/extras/sdl.hpp"
+#include "grace/extras/window.hpp"
 
 int main()
 {
-  const grace::demo::SDL sdl;
-  grace::demo::Window window;
+  const grace::SDL sdl;
+  auto window = grace::make_window("Grace demo", 800, 600);
 
   const std::vector layers = {"VK_LAYER_KHRONOS_validation"};
-  const auto instance_extensions = grace::get_required_instance_extensions(window.data());
+  const auto instance_extensions = grace::get_required_instance_extensions(window.get());
 
-  window.show();
+  SDL_ShowWindow(window.get());
 
   bool running = true;
   while (running) {
@@ -26,7 +27,7 @@ int main()
     }
   }
 
-  window.hide();
+  SDL_HideWindow(window.get());
 
   std::cout << "Exiting...\n";
   return EXIT_SUCCESS;
