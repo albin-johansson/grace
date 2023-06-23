@@ -5,16 +5,12 @@
 
 namespace grace {
 
-void SetGlobalAllocator(VmaAllocator allocator) noexcept;
-void SetGlobalInstance(VkInstance instance) noexcept;
-void SetGlobalDevice(VkDevice device) noexcept;
-void SetGlobalGraphicsCommandPool(VkCommandPool cmd_pool) noexcept;
-void SetGlobalPresentationCommandPool(VkCommandPool cmd_pool) noexcept;
-
-[[nodiscard]] auto GetGlobalAllocator() noexcept -> VmaAllocator;
-[[nodiscard]] auto GetGlobalInstance() noexcept -> VkInstance;
-[[nodiscard]] auto GetGlobalDevice() noexcept -> VkDevice;
-[[nodiscard]] auto GetGlobalGraphicsCommandPool() noexcept -> VkCommandPool;
-[[nodiscard]] auto GetGlobalPresentationCommandPool() noexcept -> VkCommandPool;
+struct Context final {
+  VkInstance instance {VK_NULL_HANDLE};
+  VkPhysicalDevice gpu {VK_NULL_HANDLE};
+  VkDevice device {VK_NULL_HANDLE};
+  VmaAllocator allocator {VK_NULL_HANDLE};
+  VkCommandPool graphics_command_pool {VK_NULL_HANDLE};
+};
 
 }  // namespace grace
