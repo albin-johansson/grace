@@ -1,41 +1,32 @@
 cmake_minimum_required(VERSION 3.24)
 
 if (DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
- cmake_path(SET VCPKG_ROOT NORMALIZE $ENV{VCPKG_ROOT})
- set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+  cmake_path(SET VCPKG_ROOT NORMALIZE $ENV{VCPKG_ROOT})
+  set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 endif ()
 
 project(grace LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_EXTENSIONS OFF)
+# Configuration options
+option(GRACE_USE_VULKAN_SUBSET "Allow partial Vulkan implementations, e.g., MoltenVK" OFF)
+option(GRACE_USE_SDL2 "Enable SDL2 dependent APIs" OFF)
+option(GRACE_ENABLE_DEMO "Build the demo application" OFF)
 
+# Directory variables
+set(VULKAN_INCLUDE_DIR "$ENV{VULKAN_SDK}/include")
+set(GRACE_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
+set(GRACE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
+
+# Required dependencies
 find_package(Vulkan REQUIRED)
 find_package(unofficial-vulkan-memory-allocator CONFIG REQUIRED)
 
-set(GRACE_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
-set(GRACE_SOURCES_DIR "${PROJECT_SOURCE_DIR}/src")
+if (GRACE_USE_SDL2 MATCHES ON)
+  find_package(SDL2 CONFIG REQUIRED)
+endif ()
 
-set(GRACE_HEADER_FILES
-    "${GRACE_INCLUDE_DIR}/grace/context.hpp"
-    )
+add_subdirectory(src)
 
-set(GRACE_SOURCE_FILES
-    "${GRACE_SOURCES_DIR}/context.cpp"
-    )
-
-add_library(grace ${GRACE_HEADER_FILES} ${GRACE_SOURCE_FILES})
-
-target_include_directories(grace
-                           PUBLIC
-                           ${GRACE_INCLUDE_DIR}
-
-                           SYSTEM PUBLIC
-                           "$ENV{VULKAN_SDK}/include"
-                           )
-
-target_link_libraries(grace
-                      PUBLIC
-                      Vulkan::Vulkan
-                      unofficial::vulkan-memory-allocator::vulkan-memory-allocator
-                      )
+if (GRACE_ENABLE_DEMO MATCHES ON)
+  add_subdirectory(demo)
+endif ()
