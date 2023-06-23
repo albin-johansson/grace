@@ -1,6 +1,7 @@
 #pragma once
 
-#include <memory>  // unique_ptr
+#include <memory>    // unique_ptr
+#include <optional>  // optional
 
 #include <vulkan/vulkan.h>
 
@@ -16,11 +17,13 @@ class Surface final {
  public:
   Surface(VkInstance instance, VkSurfaceKHR surface);
 
-  Surface(Surface&& other) noexcept;
-  Surface& operator=(Surface&& other) noexcept;
+  Surface(const Surface& other) = delete;
 
-  Surface(const Surface&) = delete;
-  Surface& operator=(const Surface&) = delete;
+  Surface(Surface&& other) noexcept;
+
+  Surface& operator=(const Surface& other) = delete;
+
+  Surface& operator=(Surface&& other) noexcept;
 
   ~Surface() noexcept;
 
@@ -37,7 +40,10 @@ class Surface final {
 
 #ifdef GRACE_USE_SDL2
 
-using SurfaceResult = Result<Surface>;
+struct SurfaceResult final {
+  std::optional<Surface> surface;
+  VkResult status;
+};
 
 [[nodiscard]] auto make_surface(SDL_Window* window, VkInstance instance) -> SurfaceResult;
 

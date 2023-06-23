@@ -67,7 +67,7 @@ auto make_surface(SDL_Window* window, VkInstance instance) -> SurfaceResult
 
   SurfaceResult result;
   if (succeeded) {
-    result.obj.emplace(instance, surface);
+    result.surface.emplace(instance, surface);
   }
   result.status = succeeded ? VK_SUCCESS : VK_ERROR_UNKNOWN;
 
