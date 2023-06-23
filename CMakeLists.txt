@@ -11,6 +11,7 @@ project(grace LANGUAGES CXX)
 option(GRACE_USE_VULKAN_SUBSET "Allow partial Vulkan implementations, e.g., MoltenVK" OFF)
 option(GRACE_USE_SDL2 "Enable SDL2 dependent APIs" OFF)
 option(GRACE_ENABLE_DEMO "Build the demo application" OFF)
+option(GRACE_ENABLE_TESTS "Build the test suite" OFF)
 
 # Directory variables
 set(VULKAN_INCLUDE_DIR "$ENV{VULKAN_SDK}/include")
@@ -29,4 +30,9 @@ add_subdirectory(src)
 
 if (GRACE_ENABLE_DEMO MATCHES ON)
   add_subdirectory(demo)
+endif ()
+
+if (GRACE_ENABLE_TESTS MATCHES ON)
+  find_package(doctest CONFIG REQUIRED)
+  add_subdirectory(tests)
 endif ()

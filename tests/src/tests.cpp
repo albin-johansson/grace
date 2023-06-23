@@ -1,0 +1,14 @@
+#define DOCTEST_CONFIG_IMPLEMENT
+#include <doctest/doctest.h>
+
+int main(int argc, char* argv[])
+{
+  doctest::Context context {argc, argv};
+  const auto res = context.run();
+
+  if (context.shouldExit()) {
+    return res;
+  }
+
+  return 0;
+}
