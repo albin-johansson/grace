@@ -37,7 +37,7 @@ jobs:
           cmake .. -GNinja \
             -DCMAKE_BUILD_TYPE=Debug \
             -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}} \
-            -DGRACE_USE_VULKAN_SUBSET=ON \
+            -DGRACE_USE_VULKAN_SUBSET=OFF \
             -DGRACE_USE_SDL2=ON \
             -DGRACE_ENABLE_DEMO=ON \
             -DGRACE_ENABLE_TESTS=ON
