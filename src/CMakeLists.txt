@@ -29,7 +29,7 @@ target_link_libraries(grace
                       )
 
 if (GRACE_USE_VULKAN_SUBSET MATCHES ON)
-  target_compile_definitions(grace PRIVATE GRACE_USE_VULKAN_SUBSET)
+  target_compile_definitions(grace PUBLIC GRACE_USE_VULKAN_SUBSET)
 endif ()
 
 if (GRACE_USE_SDL2 MATCHES ON)
