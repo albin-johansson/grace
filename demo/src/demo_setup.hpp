@@ -17,6 +17,10 @@ class Window final {
 
   ~Window() noexcept;
 
+  void show() { SDL_ShowWindow(mWindow); }
+
+  void hide() { SDL_HideWindow(mWindow); }
+
   [[nodiscard]] auto data() noexcept -> SDL_Window* { return mWindow; }
 
  private:

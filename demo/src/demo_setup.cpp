@@ -30,8 +30,8 @@ Window::Window()
           "Grace",
           SDL_WINDOWPOS_CENTERED,
           SDL_WINDOWPOS_CENTERED,
-          1200,
-          900,
+          800,
+          600,
           SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_VULKAN)}
 {
   if (!mWindow) {
