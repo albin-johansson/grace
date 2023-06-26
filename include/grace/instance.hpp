@@ -20,11 +20,6 @@ struct InstanceDeleter final {
 
 using UniqueInstance = std::unique_ptr<VkInstance_T, InstanceDeleter>;
 
-struct InstanceResult final {
-  UniqueInstance ptr;
-  VkResult status;
-};
-
 [[nodiscard]] auto make_application_info(const char* app_name,
                                          const Version& app_version,
                                          const ApiVersion& vulkan_version)
@@ -43,26 +38,26 @@ struct InstanceResult final {
  * \code{cpp}
  *   const std::vector layers = {"VK_LAYER_KHRONOS_validation"};
  *   const auto extensions = grace::get_required_instance_extensions();
- *   auto [instance, instance_status] = grace::make_instance("Vulkan App", layers, extensions);
- *   if (instance_status == VK_SUCCESS) {
+ *   if (auto instance = grace::make_instance("Vulkan App", layers, extensions)) {
  *     // Instance created successfully
  *   }
  * \endcode
  *
- * \param app_name       the application name.
- * \param layers         the names of required layers.
- * \param extensions     the names of required extensions.
- * \param app_version    optional application version.
- * \param vulkan_version the target Vulkan API version.
+ * \param      app_name       the application name.
+ * \param      layers         the names of required layers.
+ * \param      extensions     the names of required extensions.
+ * \param      app_version    optional application version.
+ * \param      vulkan_version the target Vulkan API version.
+ * \param[out] result         the resulting error code.
  *
- * \return a Vulkan instance.
+ * \return a Vulkan instance on success; a null pointer on failure.
  */
 [[nodiscard]] auto make_instance(const char* app_name,
                                  const std::vector<const char*>& layers,
                                  const std::vector<const char*>& extensions,
                                  const Version& app_version = {0, 1, 0},
-                                 const ApiVersion& vulkan_version = {1, 2})
-    -> InstanceResult;
+                                 const ApiVersion& vulkan_version = {1, 2},
+                                 VkResult* result = nullptr) -> UniqueInstance;
 
 #ifdef GRACE_USE_SDL2
 

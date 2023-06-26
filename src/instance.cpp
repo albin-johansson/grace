@@ -63,18 +63,20 @@ auto make_instance(const char* app_name,
                    const std::vector<const char*>& layers,
                    const std::vector<const char*>& extensions,
                    const Version& app_version,
-                   const ApiVersion& vulkan_version) -> InstanceResult
+                   const ApiVersion& vulkan_version,
+                   VkResult* result) -> UniqueInstance
 {
   const auto app_info = make_application_info(app_name, app_version, vulkan_version);
   const auto instance_info = make_instance_info(&app_info, layers, extensions);
 
-  InstanceResult result;
-
   VkInstance instance = VK_NULL_HANDLE;
-  result.status = vkCreateInstance(&instance_info, nullptr, &instance);
-  result.ptr = UniqueInstance {instance};
+  const auto status = vkCreateInstance(&instance_info, nullptr, &instance);
 
-  return result;
+  if (result) {
+    *result = status;
+  }
+
+  return UniqueInstance {instance};
 }
 
 #ifdef GRACE_USE_SDL2
