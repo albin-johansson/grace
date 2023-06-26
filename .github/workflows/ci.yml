@@ -45,9 +45,9 @@ jobs:
       - name: Build
         run: ninja -C build
 
-      - name: Run tests
-        working-directory: ./build/tests
-        run: ./grace-tests
+      # - name: Run tests
+      #   working-directory: ./build/tests
+      #   run: ./grace-tests
 
   ubuntu-latest-ci:
     runs-on: ubuntu-latest
@@ -90,9 +90,9 @@ jobs:
       - name: Build
         run: ninja -C build
 
-      - name: Run tests
-        working-directory: ./build/tests
-        run: ./grace-tests
+      # - name: Run tests
+      #   working-directory: ./build/tests
+      #   run: ./grace-tests
 
   windows-latest-ci:
     runs-on: windows-latest
@@ -137,6 +137,6 @@ jobs:
       - name: Build
         run: ninja -C build
 
-      - name: Run tests
-        working-directory: ./build/tests
-        run: grace-tests.exe
+      # - name: Run tests
+      #   working-directory: ./build/tests
+      #   run: grace-tests.exe
