@@ -168,7 +168,7 @@ void get_device_queues(VkDevice device,
 
 }  // namespace
 
-int main()
+int main(int, char**)
 {
   const grace::SDL sdl;
   auto window = grace::make_window("Grace demo", 800, 600);
