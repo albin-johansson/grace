@@ -15,25 +15,22 @@ struct AllocatorDeleter final {
 
 using UniqueAllocator = std::unique_ptr<VmaAllocator_T, AllocatorDeleter>;
 
-struct AllocatorResult final {
-  UniqueAllocator ptr;
-  VkResult status;
-};
-
 /**
  * Attempts to create a Vulkan memory allocator from the VMA library.
  *
- * \param instance       the associated instance.
- * \param gpu            the associated physical device.
- * \param device         the associated logical device.
- * \param vulkan_version the target Vulkan version.
+ * \param      instance       the associated instance.
+ * \param      gpu            the associated physical device.
+ * \param      device         the associated logical device.
+ * \param      vulkan_version the target Vulkan version.
+ * \param[out] result         the resulting error code.
  *
- * \return a Vulkan allocator.
+ * \return a Vulkan allocator on success; a null pointer on failure.
  */
 [[nodiscard]] auto make_allocator(VkInstance instance,
                                   VkPhysicalDevice gpu,
                                   VkDevice device,
-                                  const ApiVersion& vulkan_version = {1, 2})
-    -> AllocatorResult;
+                                  const ApiVersion& vulkan_version = {1, 2},
+                                  VkResult* result = nullptr)
+    -> UniqueAllocator ;
 
 }  // namespace grace

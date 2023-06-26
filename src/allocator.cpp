@@ -13,7 +13,8 @@ void AllocatorDeleter::operator()(VmaAllocator allocator) noexcept
 auto make_allocator(VkInstance instance,
                     VkPhysicalDevice gpu,
                     VkDevice device,
-                    const ApiVersion& vulkan_version) -> AllocatorResult
+                    const ApiVersion& vulkan_version,
+                    VkResult* result) -> UniqueAllocator
 {
   VmaAllocatorCreateInfo allocator_info = {};
   allocator_info.instance = instance;
@@ -22,12 +23,13 @@ auto make_allocator(VkInstance instance,
   allocator_info.vulkanApiVersion = to_u32(vulkan_version);
 
   VmaAllocator allocator = VK_NULL_HANDLE;
+  const auto status = vmaCreateAllocator(&allocator_info, &allocator);
 
-  AllocatorResult result;
-  result.status = vmaCreateAllocator(&allocator_info, &allocator);
-  result.ptr = UniqueAllocator {allocator};
+  if (result) {
+    *result = status;
+  }
 
-  return result;
+  return UniqueAllocator {allocator};
 }
 
 }  // namespace grace
