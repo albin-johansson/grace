@@ -43,10 +43,8 @@ auto make_device_info(const std::vector<VkDeviceQueueCreateInfo>& queue_infos,
 
 auto make_device(VkPhysicalDevice gpu,
                  VkSurfaceKHR surface,
-                 const std::vector<const char*>& layers,
-                 const std::vector<const char*>& extensions,
-                 const VkPhysicalDeviceFeatures* enabled_features,
-                 const void* next) -> DeviceResult
+                 const DeviceSpec& spec,
+                 VkResult* result) -> UniqueDevice
 {
   const auto unique_queue_families = get_unique_queue_family_indices(gpu, surface);
 
@@ -58,16 +56,20 @@ auto make_device(VkPhysicalDevice gpu,
     queue_infos.push_back(make_device_queue_info(queue_family_index, &priority));
   }
 
-  const auto device_info =
-      make_device_info(queue_infos, layers, extensions, enabled_features, next);
+  const auto device_info = make_device_info(queue_infos,
+                                            spec.layers,
+                                            spec.extensions,
+                                            spec.enabled_features,
+                                            spec.next);
 
   VkDevice device = VK_NULL_HANDLE;
+  const auto status = vkCreateDevice(gpu, &device_info, nullptr, &device);
 
-  DeviceResult result;
-  result.status = vkCreateDevice(gpu, &device_info, nullptr, &device);
-  result.ptr = UniqueDevice {device};
+  if (result) {
+    *result = status;
+  }
 
-  return result;
+  return UniqueDevice {device};
 }
 
 }  // namespace grace

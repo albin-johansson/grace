@@ -37,28 +37,26 @@ using UniqueDevice = std::unique_ptr<VkDevice_T, DeviceDeleter>;
     const VkPhysicalDeviceFeatures* enabled_features = nullptr,
     const void* next = nullptr) -> VkDeviceCreateInfo;
 
-struct DeviceResult final {
-  UniqueDevice ptr;
-  VkResult status;
+struct DeviceSpec final {
+  std::vector<const char*> layers;                      ///< Names of required layers.
+  std::vector<const char*> extensions;                  ///< Names of required extensions.
+  const VkPhysicalDeviceFeatures* enabled_features {};  ///< Enabled GPU features.
+  const void* next {};  ///< Any `VkDeviceCreateInfo` extension.
 };
 
 /**
  * Attempts to create a Vulkan logical device.
  *
- * \param gpu              the associated physical device.
- * \param surface          the associated surface.
- * \param layers           names of the required layers.
- * \param extensions       names of the required device extensions.
- * \param enabled_features physical device features that will be enabled.
- * \param next             pointer to a structure extension for `VkDeviceCreateInfo`.
+ * \param      gpu     the associated physical device.
+ * \param      surface the associated surface.
+ * \param      spec    the device specification.
+ * \param[out] result  the resulting error code.
  *
- * \return the created logical device.
+ * \return a logical device on success; a null pointer on failure.
  */
 [[nodiscard]] auto make_device(VkPhysicalDevice gpu,
                                VkSurfaceKHR surface,
-                               const std::vector<const char*>& layers,
-                               const std::vector<const char*>& extensions,
-                               const VkPhysicalDeviceFeatures* enabled_features = nullptr,
-                               const void* next = nullptr) -> DeviceResult;
+                               const DeviceSpec& spec,
+                               VkResult* result = nullptr) -> UniqueDevice;
 
 }  // namespace grace
