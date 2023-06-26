@@ -165,7 +165,8 @@ auto pick_physical_device(VkInstance instance,
 
   auto gpu_comparer = [](const SuitablePhysicalDevice& a,
                          const SuitablePhysicalDevice& b) { return a.score < b.score; };
-  preferred_gpu = std::ranges::max_element(suitable_gpus, gpu_comparer)->gpu;
+  preferred_gpu =
+      std::max_element(suitable_gpus.begin(), suitable_gpus.end(), gpu_comparer)->gpu;
 
   return preferred_gpu;
 }
