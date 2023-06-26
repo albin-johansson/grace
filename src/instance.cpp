@@ -19,11 +19,10 @@ auto make_application_info(const char* app_name,
       .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
       .pNext = nullptr,
       .pApplicationName = app_name,
-      .applicationVersion =
-          VK_MAKE_VERSION(app_version.major, app_version.minor, app_version.patch),
+      .applicationVersion = to_u32(app_version),
       .pEngineName = "No Engine",
       .engineVersion = VK_MAKE_VERSION(0, 1, 0),
-      .apiVersion = VK_MAKE_API_VERSION(0, vulkan_version.major, vulkan_version.minor, 0),
+      .apiVersion = to_u32(vulkan_version),
   };
 }
 
