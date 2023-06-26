@@ -16,7 +16,7 @@ struct QueueFamilyIndices final {
 };
 
 struct SwapchainSupport final {
-  VkSurfaceCapabilitiesKHR capabilities {};
+  VkSurfaceCapabilitiesKHR surface_capabilities {};
   std::vector<VkSurfaceFormatKHR> surface_formats;  ///< Supported surface formats.
   std::vector<VkPresentModeKHR> present_modes;      ///< Supported present modes.
 };

@@ -124,7 +124,7 @@ auto get_swapchain_support(VkPhysicalDevice gpu, VkSurfaceKHR surface) -> Swapch
 {
   SwapchainSupport support;
 
-  vkGetPhysicalDeviceSurfaceCapabilitiesKHR(gpu, surface, &support.capabilities);
+  vkGetPhysicalDeviceSurfaceCapabilitiesKHR(gpu, surface, &support.surface_capabilities);
 
   support.surface_formats = get_surface_formats(gpu, surface);
   support.present_modes = get_present_modes(gpu, surface);
