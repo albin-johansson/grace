@@ -126,7 +126,7 @@ auto get_swapchain_support(VkPhysicalDevice gpu, VkSurfaceKHR surface) -> Swapch
 
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(gpu, surface, &support.capabilities);
 
-  support.formats = get_surface_formats(gpu, surface);
+  support.surface_formats = get_surface_formats(gpu, surface);
   support.present_modes = get_present_modes(gpu, surface);
 
   return support;
@@ -137,10 +137,10 @@ struct SuitablePhysicalDevice final {
   int score {};
 };
 
-auto select_physical_device(VkInstance instance,
-                            VkSurfaceKHR surface,
-                            const PhysicalDeviceFilter& gpu_filter,
-                            const PhysicalDeviceRater& gpu_rater) -> VkPhysicalDevice
+auto pick_physical_device(VkInstance instance,
+                          VkSurfaceKHR surface,
+                          const PhysicalDeviceFilter& gpu_filter,
+                          const PhysicalDeviceRater& gpu_rater) -> VkPhysicalDevice
 {
   const auto gpus = get_physical_devices(instance);
   if (gpus.empty()) {

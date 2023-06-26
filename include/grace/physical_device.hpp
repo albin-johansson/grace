@@ -17,8 +17,8 @@ struct QueueFamilyIndices final {
 
 struct SwapchainSupport final {
   VkSurfaceCapabilitiesKHR capabilities {};
-  std::vector<VkSurfaceFormatKHR> formats;      ///< Supported surface formats.
-  std::vector<VkPresentModeKHR> present_modes;  ///< Supported present modes.
+  std::vector<VkSurfaceFormatKHR> surface_formats;  ///< Supported surface formats.
+  std::vector<VkPresentModeKHR> present_modes;      ///< Supported present modes.
 };
 
 /// Returns all available GPUs, regardless of their suitability.
@@ -66,10 +66,10 @@ using PhysicalDeviceRater = std::function<int(VkPhysicalDevice)>;
  *
  * \return the selected physical device, or null if no suitable GPU was found.
  */
-[[nodiscard]] auto select_physical_device(VkInstance instance,
-                                          VkSurfaceKHR surface,
-                                          const PhysicalDeviceFilter& gpu_filter,
-                                          const PhysicalDeviceRater& gpu_rater)
+[[nodiscard]] auto pick_physical_device(VkInstance instance,
+                                        VkSurfaceKHR surface,
+                                        const PhysicalDeviceFilter& gpu_filter,
+                                        const PhysicalDeviceRater& gpu_rater)
     -> VkPhysicalDevice;
 
 }  // namespace grace
