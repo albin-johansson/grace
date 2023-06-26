@@ -13,39 +13,24 @@
 
 namespace grace {
 
-class Surface final {
- public:
-  Surface(VkInstance instance, VkSurfaceKHR surface);
+struct Surface final {
+  Surface() = default;
+  ~Surface() noexcept;
 
   Surface(const Surface& other) = delete;
-
   Surface(Surface&& other) noexcept;
 
   Surface& operator=(const Surface& other) = delete;
-
   Surface& operator=(Surface&& other) noexcept;
 
-  ~Surface() noexcept;
-
-  [[nodiscard]] auto ptr() noexcept -> VkSurfaceKHR { return mSurface; }
-
-  [[nodiscard]] auto instance() noexcept -> VkInstance { return mInstance; }
-
- private:
-  VkInstance mInstance;
-  VkSurfaceKHR mSurface;
-
-  void _destroy() noexcept;
+  VkInstance instance {VK_NULL_HANDLE};
+  VkSurfaceKHR ptr {VK_NULL_HANDLE};
 };
 
 #ifdef GRACE_USE_SDL2
 
-struct SurfaceResult final {
-  std::optional<Surface> surface;
-  VkResult status;
-};
-
-[[nodiscard]] auto make_surface(SDL_Window* window, VkInstance instance) -> SurfaceResult;
+[[nodiscard]] auto make_surface(SDL_Window* window, VkInstance instance)
+    -> std::optional<Surface>;
 
 #endif  // GRACE_USE_SDL2
 

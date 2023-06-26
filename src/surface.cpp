@@ -1,44 +1,39 @@
 #include "grace/surface.hpp"
 
-#include <stdexcept>  // invalid_argument
-
 #ifdef GRACE_USE_SDL2
 #include <SDL2/SDL_vulkan.h>
 #endif  // GRACE_USE_SDL2
 
 namespace grace {
+namespace {
 
-Surface::Surface(VkInstance instance, VkSurfaceKHR surface)
-    : mInstance {instance},
-      mSurface {surface}
+void _destroy_surface(VkInstance instance, VkSurfaceKHR surface) noexcept
 {
-  if (!mInstance) {
-    throw std::invalid_argument {"Null instance pointer passed to Surface constructor"};
-  }
-
-  if (!mSurface) {
-    throw std::invalid_argument {"Null surface pointer passed to Surface constructor"};
+  if (instance != VK_NULL_HANDLE && surface != VK_NULL_HANDLE) {
+    vkDestroySurfaceKHR(instance, surface, nullptr);
   }
 }
 
+}  // namespace
+
 Surface::Surface(Surface&& other) noexcept
-    : mInstance {other.mInstance},
-      mSurface {other.mSurface}
+    : instance {other.instance},
+      ptr {other.ptr}
 {
-  other.mInstance = VK_NULL_HANDLE;
-  other.mSurface = VK_NULL_HANDLE;
+  other.instance = VK_NULL_HANDLE;
+  other.ptr = VK_NULL_HANDLE;
 }
 
 Surface& Surface::operator=(Surface&& other) noexcept
 {
   if (this != &other) {
-    _destroy();
+    _destroy_surface(instance, ptr);
 
-    mInstance = other.mInstance;
-    mSurface = other.mSurface;
+    instance = other.instance;
+    ptr = other.ptr;
 
-    other.mInstance = VK_NULL_HANDLE;
-    other.mSurface = VK_NULL_HANDLE;
+    other.instance = VK_NULL_HANDLE;
+    other.ptr = VK_NULL_HANDLE;
   }
 
   return *this;
@@ -46,30 +41,21 @@ Surface& Surface::operator=(Surface&& other) noexcept
 
 Surface::~Surface() noexcept
 {
-  _destroy();
-}
-
-void Surface::_destroy() noexcept
-{
-  if (mSurface != VK_NULL_HANDLE) {
-    vkDestroySurfaceKHR(mInstance, mSurface, nullptr);
-  }
+  _destroy_surface(instance, ptr);
 }
 
 #ifdef GRACE_USE_SDL2
 
-auto make_surface(SDL_Window* window, VkInstance instance) -> SurfaceResult
+auto make_surface(SDL_Window* window, VkInstance instance) -> std::optional<Surface>
 {
-  VkSurfaceKHR surface = VK_NULL_HANDLE;
-  const bool succeeded = SDL_Vulkan_CreateSurface(window, instance, &surface) == SDL_TRUE;
+  Surface surface;
+  surface.instance = instance;
 
-  SurfaceResult result;
-  if (succeeded) {
-    result.surface.emplace(instance, surface);
+  if (SDL_Vulkan_CreateSurface(window, instance, &surface.ptr) == SDL_TRUE) {
+    return surface;
   }
-  result.status = succeeded ? VK_SUCCESS : VK_ERROR_UNKNOWN;
 
-  return result;
+  return std::nullopt;
 }
 
 #endif  // GRACE_USE_SDL2

@@ -52,10 +52,12 @@ TEST_SUITE("Instance")
     extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
 #endif  // GRACE_USE_VULKAN_SUBSET
 
-    auto [instance, instance_status] = grace::make_instance("Tests", layers, extensions);
+    VkResult result;
+    auto instance =
+        grace::make_instance("Tests", layers, extensions, {0, 1, 0}, {1, 2}, &result);
 
-    CHECK(instance_status == VK_SUCCESS);
     CHECK(instance != nullptr);
+    CHECK(result == VK_SUCCESS);
   }
 
 #ifdef GRACE_USE_SDL2
@@ -67,10 +69,12 @@ TEST_SUITE("Instance")
     const std::vector layers = {"VK_LAYER_KHRONOS_validation"};
     const auto extensions = grace::get_required_instance_extensions(window.get());
 
-    auto [instance, instance_status] = grace::make_instance("Tests", layers, extensions);
+    VkResult result;
+    auto instance =
+        grace::make_instance("Tests", layers, extensions, {0, 1, 0}, {1, 0}, &result);
 
-    CHECK(instance_status == VK_SUCCESS);
     CHECK(instance != nullptr);
+    CHECK(result == VK_SUCCESS);
   }
 
 #endif  // GRACE_USE_SDL2
