@@ -5,12 +5,10 @@
 
 namespace grace {
 
-struct Context final {
-  VkInstance instance {VK_NULL_HANDLE};
-  VkPhysicalDevice gpu {VK_NULL_HANDLE};
+struct CommandContext final {
   VkDevice device {VK_NULL_HANDLE};
-  VmaAllocator allocator {VK_NULL_HANDLE};
-  VkCommandPool graphics_command_pool {VK_NULL_HANDLE};
+  VkQueue queue {VK_NULL_HANDLE};
+  VkCommandPool cmd_pool {VK_NULL_HANDLE};
 };
 
 }  // namespace grace

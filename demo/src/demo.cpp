@@ -2,9 +2,8 @@
 #include <iostream>  // cout, cerr
 #include <vector>    // vector
 
+#include <grace/grace.hpp>
 #include <vulkan/vulkan.h>
-
-#include "grace/grace.hpp"
 
 namespace {
 

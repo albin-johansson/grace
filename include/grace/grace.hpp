@@ -1,6 +1,7 @@
 #pragma once
 
 #include "grace/allocator.hpp"
+#include "grace/buffer.hpp"
 #include "grace/command_pool.hpp"
 #include "grace/common.hpp"
 #include "grace/context.hpp"
