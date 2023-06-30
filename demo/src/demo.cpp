@@ -113,9 +113,12 @@ inline const std::vector kEnabledLayers = {"VK_LAYER_KHRONOS_validation"};
 
   grace::DeviceSpec device_spec;
   device_spec.layers = kEnabledLayers;
-  device_spec.extensions = {"VK_KHR_portability_subset"};
   device_spec.enabled_features = &enabled_features;
   device_spec.next = &indexing_features;
+
+#ifdef GRACE_USE_VULKAN_SUBSET
+  device_spec.extensions.push_back("VK_KHR_portability_subset");
+#endif  // GRACE_USE_VULKAN_SUBSET
 
   VkResult result;
   auto device = grace::make_device(gpu, surface, device_spec, &result);
