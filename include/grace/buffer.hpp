@@ -54,6 +54,9 @@ struct BufferSpec final {
 /**
  * Creates an empty buffer suitable for use as a staging buffer.
  *
+ * \details This function will automatically include the
+ *          `VK_BUFFER_USAGE_TRANSFER_SRC_BIT` buffer usage flag.
+ *
  * \param      allocator    the associated allocator.
  * \param      size         the total size of the buffer in bytes.
  * \param      buffer_usage buffer usage hint.
@@ -69,6 +72,9 @@ struct BufferSpec final {
 
 /**
  * Creates an empty device (GPU) buffer.
+ *
+ * \details This function will automatically include the
+ *          `VK_BUFFER_USAGE_TRANSFER_DST_BIT` buffer usage flag.
  *
  * \param      allocator    the associated allocator.
  * \param      size         the total size of the buffer in bytes.
