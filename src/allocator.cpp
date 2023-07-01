@@ -5,6 +5,23 @@
 
 namespace grace {
 
+auto make_allocation_info(const VkMemoryPropertyFlags required_mem_props,
+                          const VkMemoryPropertyFlags preferred_mem_props,
+                          const VmaAllocationCreateFlags alloc_flags,
+                          const VmaMemoryUsage memory_usage) -> VmaAllocationCreateInfo
+{
+  return {
+      .flags = alloc_flags,
+      .usage = memory_usage,
+      .requiredFlags = required_mem_props,
+      .preferredFlags = preferred_mem_props,
+      .memoryTypeBits = 0,
+      .pool = nullptr,
+      .pUserData = nullptr,
+      .priority = 0.0f,
+  };
+}
+
 void AllocatorDeleter::operator()(VmaAllocator allocator) noexcept
 {
   vmaDestroyAllocator(allocator);

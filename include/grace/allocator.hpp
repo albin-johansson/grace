@@ -9,6 +9,12 @@
 
 namespace grace {
 
+[[nodiscard]] auto make_allocation_info(
+    VkMemoryPropertyFlags required_mem_props,
+    VkMemoryPropertyFlags preferred_mem_props,
+    VmaAllocationCreateFlags alloc_flags,
+    VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_AUTO) -> VmaAllocationCreateInfo;
+
 struct AllocatorDeleter final {
   void operator()(VmaAllocator allocator) noexcept;
 };
@@ -30,7 +36,6 @@ using UniqueAllocator = std::unique_ptr<VmaAllocator_T, AllocatorDeleter>;
                                   VkPhysicalDevice gpu,
                                   VkDevice device,
                                   const ApiVersion& vulkan_version = {1, 2},
-                                  VkResult* result = nullptr)
-    -> UniqueAllocator ;
+                                  VkResult* result = nullptr) -> UniqueAllocator;
 
 }  // namespace grace
