@@ -14,4 +14,6 @@ using uint64 = std::uint64_t;
 
 using int32 = std::int32_t;
 
+[[nodiscard]] auto to_string(VkResult result) -> const char*;
+
 }  // namespace grace

@@ -1,12 +1,17 @@
-#include <cstdlib>   // EXIT_FAILURE, EXIT_SUCCESS
-#include <iostream>  // cout, cerr
-#include <vector>    // vector
+#include <algorithm>  // clamp
+#include <cstdlib>    // EXIT_FAILURE, EXIT_SUCCESS
+#include <iostream>   // cout, cerr
+#include <limits>     // numeric_limits
+#include <vector>     // vector
 
 #include <grace/grace.hpp>
 #include <vulkan/vulkan.h>
 
+using uint32 = grace::uint32;
+
 namespace {
 
+inline constexpr uint32 kMaxU32 = std::numeric_limits<uint32>::max();
 inline constexpr grace::ApiVersion kTargetVulkanVersion = {1, 2};
 inline const std::vector kEnabledLayers = {"VK_LAYER_KHRONOS_validation"};
 
@@ -23,7 +28,7 @@ inline const std::vector kEnabledLayers = {"VK_LAYER_KHRONOS_validation"};
                                        &result);
 
   if (!instance) {
-    std::cerr << "Could not create instance: " << result << '\n';
+    std::cerr << "Could not create instance: " << grace::to_string(result) << '\n';
   }
   else {
     std::cout << "Successfully created instance\n";
@@ -124,7 +129,7 @@ inline const std::vector kEnabledLayers = {"VK_LAYER_KHRONOS_validation"};
   auto device = grace::make_device(gpu, surface, device_spec, &result);
 
   if (!device) {
-    std::cerr << "Could not create logical device: " << result << '\n';
+    std::cerr << "Could not create logical device: " << grace::to_string(result) << '\n';
   }
   else {
     std::cout << "Successfully created logical device\n";
@@ -159,7 +164,7 @@ void get_device_queues(VkDevice device,
       grace::make_allocator(instance, gpu, device, kTargetVulkanVersion, &result);
 
   if (!allocator) {
-    std::cerr << "Could not create allocator: " << result << '\n';
+    std::cerr << "Could not create allocator: " << grace::to_string(result) << '\n';
   }
   else {
     std::cout << "Successfully created allocator\n";
