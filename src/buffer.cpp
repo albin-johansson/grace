@@ -200,7 +200,7 @@ auto Buffer::for_device_with_data(const CommandContext& ctx,
     return Buffer {};
   }
 
-  execute_now(ctx.device, ctx.queue, ctx.cmd_pool, [&](VkCommandBuffer cmds) {
+  execute_now(ctx, [&](VkCommandBuffer cmds) {
     VkBufferCopy region = {};
     region.size = data_size;
     vkCmdCopyBuffer(cmds, staging_buffer.mBuffer, device_buffer.mBuffer, 1, &region);

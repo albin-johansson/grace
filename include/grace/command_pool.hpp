@@ -4,7 +4,8 @@
 
 #include <vulkan/vulkan.h>
 
-#include "grace/common.hpp"
+#include "common.hpp"
+#include "context.hpp"
 
 namespace grace {
 
@@ -22,24 +23,18 @@ using CommandBufferCallback = std::function<void(VkCommandBuffer)>;
                                                       VkResult* result = nullptr)
     -> VkCommandBuffer;
 
-auto execute_single_submit_commands(VkDevice device,
-                                    VkQueue queue,
-                                    VkCommandPool cmd_pool,
-                                    VkCommandBuffer cmd_buffer) -> VkResult;
+auto execute_single_submit_commands(const CommandContext& ctx, VkCommandBuffer cmd_buffer)
+    -> VkResult;
 
 /**
  * Records commands into a command buffer, submits it, and waits for it to complete.
  *
- * \param device   the associated device.
- * \param queue    the queue to submit the command buffer to.
- * \param cmd_pool the associated command pool.
+ * \param device   the command context.
  * \param callback the function object used to record commands.
  *
  * \return the resulting error code.
  */
-auto execute_now(VkDevice device,
-                 VkQueue queue,
-                 VkCommandPool cmd_pool,
-                 const CommandBufferCallback& callback) -> VkResult;
+auto execute_now(const CommandContext& ctx, const CommandBufferCallback& callback)
+    -> VkResult;
 
 }  // namespace grace

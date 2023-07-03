@@ -8,26 +8,24 @@ auto make_command_pool_info(const uint32 queue_family_index,
                             const VkCommandPoolCreateFlags flags)
     -> VkCommandPoolCreateInfo
 {
-  VkCommandPoolCreateInfo pool_info = {};
-
-  pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-  pool_info.queueFamilyIndex = queue_family_index;
-  pool_info.flags = flags;
-
-  return pool_info;
+  return {
+      .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+      .pNext = nullptr,
+      .flags = flags,
+      .queueFamilyIndex = queue_family_index,
+  };
 }
 
 auto make_command_buffer_alloc_info(VkCommandPool cmd_pool, const uint32 count)
     -> VkCommandBufferAllocateInfo
 {
-  VkCommandBufferAllocateInfo alloc_info = {};
-
-  alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-  alloc_info.commandPool = cmd_pool;
-  alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-  alloc_info.commandBufferCount = count;
-
-  return alloc_info;
+  return {
+      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+      .pNext = nullptr,
+      .commandPool = cmd_pool,
+      .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+      .commandBufferCount = count,
+  };
 }
 
 auto alloc_single_submit_command_buffer(VkDevice device,
@@ -46,10 +44,8 @@ auto alloc_single_submit_command_buffer(VkDevice device,
   return cmd_buffer;
 }
 
-auto execute_single_submit_commands(VkDevice device,
-                                    VkQueue queue,
-                                    VkCommandPool cmd_pool,
-                                    VkCommandBuffer cmd_buffer) -> VkResult
+auto execute_single_submit_commands(const CommandContext& ctx, VkCommandBuffer cmd_buffer)
+    -> VkResult
 {
   auto result = vkEndCommandBuffer(cmd_buffer);
   if (result != VK_SUCCESS) {
@@ -57,32 +53,30 @@ auto execute_single_submit_commands(VkDevice device,
   }
 
   const auto submit_info = make_submit_info(cmd_buffer);
-  result = vkQueueSubmit(queue, 1, &submit_info, VK_NULL_HANDLE);
+  result = vkQueueSubmit(ctx.queue, 1, &submit_info, VK_NULL_HANDLE);
   if (result != VK_SUCCESS) {
     return result;
   }
 
-  result = vkQueueWaitIdle(queue);
+  result = vkQueueWaitIdle(ctx.queue);
   if (result != VK_SUCCESS) {
     return result;
   }
 
-  vkFreeCommandBuffers(device, cmd_pool, 1, &cmd_buffer);
+  vkFreeCommandBuffers(ctx.device, ctx.cmd_pool, 1, &cmd_buffer);
   return VK_SUCCESS;
 }
 
-auto execute_now(VkDevice device,
-                 VkQueue queue,
-                 VkCommandPool cmd_pool,
-                 const CommandBufferCallback& callback) -> VkResult
+auto execute_now(const CommandContext& ctx, const CommandBufferCallback& callback)
+    -> VkResult
 {
   VkResult result = VK_SUCCESS;
   VkCommandBuffer cmd_buffer =
-      alloc_single_submit_command_buffer(device, cmd_pool, &result);
+      alloc_single_submit_command_buffer(ctx.device, ctx.cmd_pool, &result);
 
   if (cmd_buffer) {
     callback(cmd_buffer);
-    result = execute_single_submit_commands(device, queue, cmd_pool, cmd_buffer);
+    result = execute_single_submit_commands(ctx, cmd_buffer);
   }
 
   return result;
