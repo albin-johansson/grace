@@ -5,35 +5,31 @@
 #endif  // GRACE_USE_SDL2
 
 namespace grace {
-namespace {
 
-void _destroy_surface(VkInstance instance, VkSurfaceKHR surface) noexcept
+Surface::Surface(VkInstance instance, VkSurfaceKHR surface) noexcept
+    : mInstance {instance},
+      mSurface {surface}
 {
-  if (instance != VK_NULL_HANDLE && surface != VK_NULL_HANDLE) {
-    vkDestroySurfaceKHR(instance, surface, nullptr);
-  }
 }
 
-}  // namespace
-
 Surface::Surface(Surface&& other) noexcept
-    : instance {other.instance},
-      ptr {other.ptr}
+    : mInstance {other.mInstance},
+      mSurface {other.mSurface}
 {
-  other.instance = VK_NULL_HANDLE;
-  other.ptr = VK_NULL_HANDLE;
+  other.mInstance = VK_NULL_HANDLE;
+  other.mSurface = VK_NULL_HANDLE;
 }
 
 Surface& Surface::operator=(Surface&& other) noexcept
 {
   if (this != &other) {
-    _destroy_surface(instance, ptr);
+    destroy();
 
-    instance = other.instance;
-    ptr = other.ptr;
+    mInstance = other.mInstance;
+    mSurface = other.mSurface;
 
-    other.instance = VK_NULL_HANDLE;
-    other.ptr = VK_NULL_HANDLE;
+    other.mInstance = VK_NULL_HANDLE;
+    other.mSurface = VK_NULL_HANDLE;
   }
 
   return *this;
@@ -41,21 +37,27 @@ Surface& Surface::operator=(Surface&& other) noexcept
 
 Surface::~Surface() noexcept
 {
-  _destroy_surface(instance, ptr);
+  destroy();
+}
+
+void Surface::destroy() noexcept
+{
+  if (mSurface != VK_NULL_HANDLE) {
+    vkDestroySurfaceKHR(mInstance, mSurface, nullptr);
+    mSurface = VK_NULL_HANDLE;
+  }
 }
 
 #ifdef GRACE_USE_SDL2
 
-auto make_surface(SDL_Window* window, VkInstance instance) -> std::optional<Surface>
+auto Surface::make(SDL_Window* window, VkInstance instance) -> Surface
 {
-  Surface surface;
-  surface.instance = instance;
-
-  if (SDL_Vulkan_CreateSurface(window, instance, &surface.ptr) == SDL_TRUE) {
-    return surface;
+  VkSurfaceKHR surface_handle = VK_NULL_HANDLE;
+  if (SDL_Vulkan_CreateSurface(window, instance, &surface_handle) == SDL_TRUE) {
+    return Surface {instance, surface_handle};
   }
 
-  return std::nullopt;
+  return {};
 }
 
 #endif  // GRACE_USE_SDL2
