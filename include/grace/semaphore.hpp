@@ -13,11 +13,13 @@ class Semaphore final {
  public:
   Semaphore() noexcept = default;
 
+  Semaphore(VkDevice device, VkSemaphore semaphore) noexcept;
+
   Semaphore(Semaphore&& other) noexcept;
   Semaphore(const Semaphore& other) = delete;
 
-  Semaphore& operator=(Semaphore&& other) noexcept;
-  Semaphore& operator=(const Semaphore& other) = delete;
+  auto operator=(Semaphore&& other) noexcept -> Semaphore&;
+  auto operator=(const Semaphore& other) -> Semaphore& = delete;
 
   ~Semaphore() noexcept;
 

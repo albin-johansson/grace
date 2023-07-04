@@ -11,6 +11,12 @@ auto make_semaphore_info(const VkSemaphoreCreateFlags flags) -> VkSemaphoreCreat
   };
 }
 
+Semaphore::Semaphore(VkDevice device, VkSemaphore semaphore) noexcept
+    : mDevice {device},
+      mSemaphore {semaphore}
+{
+}
+
 Semaphore::Semaphore(Semaphore&& other) noexcept
     : mDevice {other.mDevice},
       mSemaphore {other.mSemaphore}
@@ -19,7 +25,7 @@ Semaphore::Semaphore(Semaphore&& other) noexcept
   other.mSemaphore = VK_NULL_HANDLE;
 }
 
-Semaphore& Semaphore::operator=(Semaphore&& other) noexcept
+auto Semaphore::operator=(Semaphore&& other) noexcept -> Semaphore&
 {
   if (this != &other) {
     destroy();
@@ -51,21 +57,19 @@ auto Semaphore::make(VkDevice device,
                      const VkSemaphoreCreateInfo& semaphore_info,
                      VkResult* result) -> Semaphore
 {
-  Semaphore semaphore;
-  semaphore.mDevice = device;
-
+  VkSemaphore semaphore_handle = VK_NULL_HANDLE;
   const auto status =
-      vkCreateSemaphore(device, &semaphore_info, nullptr, &semaphore.mSemaphore);
+      vkCreateSemaphore(device, &semaphore_info, nullptr, &semaphore_handle);
 
   if (result) {
     *result = status;
   }
 
-  if (status != VK_SUCCESS) {
-    return {};
+  if (status == VK_SUCCESS) {
+    return Semaphore {device, semaphore_handle};
   }
 
-  return semaphore;
+  return {};
 }
 
 auto Semaphore::make(VkDevice device,
