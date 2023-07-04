@@ -85,12 +85,12 @@ auto pick_present_mode(const SwapchainSupport& swapchain_support,
 auto pick_image_extent(SDL_Window* window, const VkSurfaceCapabilitiesKHR& capabilities)
     -> VkExtent2D
 {
-  if (capabilities.currentExtent.width != std::numeric_limits<uint32>::max()) {
+  if (capabilities.currentExtent.width != kMaxU32) {
     return capabilities.currentExtent;
   }
 
-  int width {};
-  int height {};
+  int width = 0;
+  int height = 0;
   SDL_GetWindowSizeInPixels(window, &width, &height);
 
   VkExtent2D extent;
