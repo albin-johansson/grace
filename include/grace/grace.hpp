@@ -14,6 +14,7 @@
 #include "grace/image_view.hpp"
 #include "grace/instance.hpp"
 #include "grace/physical_device.hpp"
+#include "grace/pipeline_cache.hpp"
 #include "grace/queue.hpp"
 #include "grace/render_pass.hpp"
 #include "grace/sampler.hpp"

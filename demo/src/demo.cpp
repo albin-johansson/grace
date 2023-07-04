@@ -299,7 +299,18 @@ int main(int, char**)
     std::cout << "Successfully created sampler\n";
   }
 
-  // TODO pipeline cache
+  VkResult pipeline_cache_result = VK_SUCCESS;
+  auto pipeline_cache =
+      gr::PipelineCache::make(device, nullptr, 0, 0, &pipeline_cache_result);
+  if (!pipeline_cache) {
+    std::cerr << "Could not create pipeline cache: "
+              << gr::to_string(pipeline_cache_result) << '\n';
+    return EXIT_FAILURE;
+  }
+  else {
+    std::cout << "Successfully created pipeline cache\n";
+  }
+
   // TODO pipeline
   // TODO command pool
   // TODO command buffer
