@@ -1,5 +1,7 @@
 # grace
 
+[![CI](https://github.com/albin-johansson/grace/actions/workflows/ci.yml/badge.svg)](https://github.com/albin-johansson/grace/actions/workflows/ci.yml)
+
 A small library that makes working with Vulkan a little easier.
 
 Note, this is not a Vulkan wrapper library. Instead, this library provides various utilities that aim to ease the burden
