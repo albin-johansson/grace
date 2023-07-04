@@ -178,7 +178,7 @@ class DescriptorSetLayoutBuilder final {
    *
    * \return a potentially null descriptor set layout.
    */
-  [[nodiscard]] auto build(VkResult* result = nullptr) -> DescriptorSetLayout;
+  [[nodiscard]] auto build(VkResult* result = nullptr) const -> DescriptorSetLayout;
 
  private:
   VkDevice mDevice {VK_NULL_HANDLE};

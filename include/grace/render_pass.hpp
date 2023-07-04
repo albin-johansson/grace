@@ -290,7 +290,7 @@ class RenderPassBuilder final {
    *
    * \return a potentially null render pass.
    */
-  [[nodiscard]] auto build(VkResult* result = nullptr) -> RenderPass;
+  [[nodiscard]] auto build(VkResult* result = nullptr) const -> RenderPass;
 
  private:
   struct SubpassInfo final {

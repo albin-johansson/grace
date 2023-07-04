@@ -307,7 +307,7 @@ auto RenderPassBuilder::end_subpass() -> Self&
   return *this;
 }
 
-auto RenderPassBuilder::build(VkResult* result) -> RenderPass
+auto RenderPassBuilder::build(VkResult* result) const -> RenderPass
 {
   assert(mDevice != VK_NULL_HANDLE);
   assert(!mActiveSubpassIndex.has_value() && "Missing call to end_subpass");

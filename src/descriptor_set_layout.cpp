@@ -169,7 +169,7 @@ auto DescriptorSetLayoutBuilder::descriptor(const uint32 binding,
   return descriptor(make_descriptor_set_layout_binding(binding, type, stages, count));
 }
 
-auto DescriptorSetLayoutBuilder::build(VkResult* result) -> DescriptorSetLayout
+auto DescriptorSetLayoutBuilder::build(VkResult* result) const -> DescriptorSetLayout
 {
   const auto descriptor_binding_flags = _make_descriptor_binding_flags();
   const auto binding_flags_info =
