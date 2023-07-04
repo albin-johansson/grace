@@ -11,6 +11,7 @@
 #include "grace/fence.hpp"
 #include "grace/framebuffer.hpp"
 #include "grace/image.hpp"
+#include "grace/image_view.hpp"
 #include "grace/instance.hpp"
 #include "grace/physical_device.hpp"
 #include "grace/queue.hpp"

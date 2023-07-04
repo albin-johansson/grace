@@ -23,8 +23,8 @@ namespace grace {
  * \param format     the texel data format.
  * \param usage      the image usage hint flags. The `VK_IMAGE_USAGE_TRANSFER_SRC_BIT` and
  *                   `VK_IMAGE_USAGE_TRANSFER_DST_BIT` flags are automatically included.
- * \param mip_levels the number of mipmap levels (ignored and set to 1 if supersampling
- *                   is used).
+ * \param mip_levels the number of supported mipmap levels (ignored and set to 1 if
+ *                   supersampling is used).
  * \param samples    the number of samples per texel.
  *
  * \return information required to create an image.
