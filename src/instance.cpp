@@ -36,25 +36,15 @@ auto make_instance_info(const VkApplicationInfo* app_info,
       .pNext = nullptr,
       .flags = 0,
       .pApplicationInfo = app_info,
-      .enabledLayerCount = 0,
-      .ppEnabledLayerNames = nullptr,
-      .enabledExtensionCount = 0,
-      .ppEnabledExtensionNames = nullptr,
+      .enabledLayerCount = u32_size(layers),
+      .ppEnabledLayerNames = data_or_null(layers),
+      .enabledExtensionCount = u32_size(extensions),
+      .ppEnabledExtensionNames = data_or_null(extensions),
   };
 
 #ifdef GRACE_USE_VULKAN_SUBSET
   instance_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #endif  // GRACE_USE_VULKAN_SUBSET
-
-  if (!layers.empty()) {
-    instance_info.enabledLayerCount = static_cast<uint32>(layers.size());
-    instance_info.ppEnabledLayerNames = layers.data();
-  }
-
-  if (!extensions.empty()) {
-    instance_info.enabledExtensionCount = static_cast<uint32>(extensions.size());
-    instance_info.ppEnabledExtensionNames = extensions.data();
-  }
 
   return instance_info;
 }

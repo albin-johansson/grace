@@ -43,12 +43,12 @@ auto make_device_info(const std::vector<VkDeviceQueueCreateInfo>& queue_infos,
   return {
       .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
       .pNext = next,
-      .queueCreateInfoCount = static_cast<uint32>(queue_infos.size()),
-      .pQueueCreateInfos = queue_infos.data(),
-      .enabledLayerCount = static_cast<uint32>(layers.size()),
-      .ppEnabledLayerNames = layers.data(),
-      .enabledExtensionCount = static_cast<uint32>(extensions.size()),
-      .ppEnabledExtensionNames = extensions.data(),
+      .queueCreateInfoCount = u32_size(queue_infos),
+      .pQueueCreateInfos = data_or_null(queue_infos),
+      .enabledLayerCount = u32_size(layers),
+      .ppEnabledLayerNames = data_or_null(layers),
+      .enabledExtensionCount = u32_size(extensions),
+      .ppEnabledExtensionNames = data_or_null(extensions),
       .pEnabledFeatures = enabled_features,
   };
 }
