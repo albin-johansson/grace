@@ -52,7 +52,7 @@ TEST_SUITE("Instance")
     extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
 #endif  // GRACE_USE_VULKAN_SUBSET
 
-    VkResult result;
+    VkResult result = VK_SUCCESS;
     auto instance =
         grace::Instance::make("Tests", layers, extensions, {0, 1, 0}, {1, 2}, &result);
 
@@ -64,12 +64,12 @@ TEST_SUITE("Instance")
 
   TEST_CASE("make_instance with get_required_instance_extensions")
   {
-    auto window = grace::make_window("Test", 800, 600);
+    auto window = grace::Window::make("Test", 800, 600);
 
     const std::vector layers = {"VK_LAYER_KHRONOS_validation"};
-    const auto extensions = grace::get_required_instance_extensions(window.get());
+    const auto extensions = grace::get_required_instance_extensions(window);
 
-    VkResult result;
+    VkResult result = VK_SUCCESS;
     auto instance =
         grace::Instance::make("Tests", layers, extensions, {0, 1, 0}, {1, 0}, &result);
 
