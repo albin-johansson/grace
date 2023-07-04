@@ -447,6 +447,15 @@ auto Swapchain::get_current_framebuffer() -> VkFramebuffer
   return VK_NULL_HANDLE;
 }
 
+auto Swapchain::get_depth_buffer_format() const -> VkFormat
+{
+  if (mDepthBuffer) {
+    return mDepthBuffer.image.info().format;
+  }
+
+  return VK_FORMAT_UNDEFINED;
+}
+
 auto Swapchain::is_ready() const -> bool
 {
   return mSwapchain != VK_NULL_HANDLE &&  //

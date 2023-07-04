@@ -239,6 +239,9 @@ int main(int, char**)
   const auto queue_family_indices = gr::get_queue_family_indices(gpu, surface);
   VkQueue graphics_queue = device.get_queue(queue_family_indices.graphics.value());
   VkQueue present_queue = device.get_queue(queue_family_indices.present.value());
+  if (graphics_queue == VK_NULL_HANDLE || present_queue == VK_NULL_HANDLE) {
+    return EXIT_FAILURE;
+  }
 
   auto allocator = create_allocator(instance, gpu, device);
   if (!allocator) {
@@ -250,7 +253,37 @@ int main(int, char**)
     return EXIT_FAILURE;
   }
 
-  // TODO render pass
+  const auto subpass_stages = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+                              VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+  const auto main_subpass_access =
+      VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+  const auto main_subpass_dependency = gr::make_subpass_dependency(VK_SUBPASS_EXTERNAL,
+                                                                   0,
+                                                                   subpass_stages,
+                                                                   subpass_stages,
+                                                                   0,
+                                                                   main_subpass_access);
+
+  gr::RenderPassBuilder render_pass_builder {device};
+
+  VkResult render_pass_result = VK_ERROR_UNKNOWN;
+  auto main_render_pass = render_pass_builder  //
+                              .color_attachment(swapchain.info().image_format)
+                              .depth_attachment(swapchain.get_depth_buffer_format())
+                              .begin_subpass()
+                              .set_color_attachment(0)
+                              .set_depth_attachment(1)
+                              .end_subpass()
+                              .subpass_dependency(main_subpass_dependency)
+                              .build(&render_pass_result);
+  if (!main_render_pass) {
+    std::cerr << "Could not create render pass: " << gr::to_string(render_pass_result)
+              << '\n';
+    return EXIT_FAILURE;
+  }
+  else {
+    std::cout << "Successfully created main render pass\n";
+  }
 
   VkResult sampler_result = VK_ERROR_UNKNOWN;
   auto sampler = gr::Sampler::make(device,

@@ -37,6 +37,8 @@ class Semaphore final {
 
   [[nodiscard]] auto device() noexcept -> VkDevice { return mDevice; }
 
+  [[nodiscard]] operator VkSemaphore() noexcept { return mSemaphore; }
+
   [[nodiscard]] explicit operator bool() const noexcept
   {
     return mSemaphore != VK_NULL_HANDLE;

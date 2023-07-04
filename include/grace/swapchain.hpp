@@ -98,6 +98,8 @@ class Swapchain final {
 
   [[nodiscard]] auto get_current_framebuffer() -> VkFramebuffer;
 
+  [[nodiscard]] auto get_depth_buffer_format() const -> VkFormat;
+
   [[nodiscard]] auto is_ready() const -> bool;
 
   [[nodiscard]] auto get() noexcept -> VkSwapchainKHR { return mSwapchain; }

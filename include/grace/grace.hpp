@@ -15,6 +15,7 @@
 #include "grace/instance.hpp"
 #include "grace/physical_device.hpp"
 #include "grace/queue.hpp"
+#include "grace/render_pass.hpp"
 #include "grace/sampler.hpp"
 #include "grace/semaphore.hpp"
 #include "grace/surface.hpp"
