@@ -13,6 +13,8 @@ set_target_properties(grace-tests
                       CXX_EXTENSIONS OFF
                       )
 
+target_include_directories(grace-tests PRIVATE ${PROJECT_SOURCE_DIR})
+
 target_link_libraries(grace-tests
                       PRIVATE
                       grace
