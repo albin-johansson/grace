@@ -30,7 +30,7 @@ class Fence final {
 
   void destroy() noexcept;
 
-  auto wait(uint64 timeout = ~0) -> VkResult;
+  auto wait(uint64 timeout = kMaxU64) -> VkResult;
 
   auto reset() -> VkResult;
 
