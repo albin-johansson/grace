@@ -14,16 +14,16 @@ excludes aspects such as proper error checking.
 int main(int argc, char* argv[])
 {
   const grace::SDL sdl;
-  auto window = grace::make_window("Grace", 800, 600);
+  auto window = grace::Window::make("Grace", 800, 600);
 
   const std::vector enabled_layers = {"VK_LAYER_KHRONOS_validation"};
 
   // Create instance
-  const auto instance_extensions = grace::get_required_instance_extensions(window.get());
-  auto instance = grace::make_instance("Grace", enabled_layers, instance_extensions);
+  const auto instance_extensions = grace::get_required_instance_extensions(window);
+  auto instance = grace::Instance::make("Grace", enabled_layers, instance_extensions);
 
   // Create surface
-  auto surface = grace::make_surface(window.get(), instance.get());
+  auto surface = grace::Surface::make(window, instance);
   
   // Pick physical device
   auto gpu_filter = [](VkPhysicalDevice gpu, VkSurfaceKHR surface) { return true; };
@@ -31,14 +31,24 @@ int main(int argc, char* argv[])
   auto gpu = grace::pick_physical_device(instance, surface, gpu_filter, gpu_rater);
 
   // Create logical device
-  grace::DeviceSpec device_spec;
-  device_spec.layers = enabled_layers;
-  auto device = grace::make_device(gpu, surface.get(), device_spec);
+  const std::vector device_extensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+  auto device = grace::Device::make(gpu, surface, enabled_layers, device_extensions);
 
   // Create allocator
-  auto allocator = grace::make_allocator(instance.get(), gpu, device.get());
+  auto allocator = grace::make_allocator(instance, gpu, device);
 
-  // TODO swapchain
+  // Create swapchain
+  const VkExtent2D image_extent = {800, 600};
+  auto surface_format_filter = [](const VkSurfaceFormatKHR& format) { return true; };
+  auto present_mode_filter = [](VkPresentModeKHR format) { return true; };
+  auto swapchain = grace::Swapchain::make(surface,
+                                          gpu,
+                                          device,
+                                          allocator,
+                                          image_extent,
+                                          surface_format_filter,
+                                          present_mode_filter);
+
   // TODO render pass
   // TODO sampler
   // TODO pipeline cache
