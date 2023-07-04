@@ -54,7 +54,7 @@ TEST_SUITE("Instance")
 
     VkResult result;
     auto instance =
-        grace::make_instance("Tests", layers, extensions, {0, 1, 0}, {1, 2}, &result);
+        grace::Instance::make("Tests", layers, extensions, {0, 1, 0}, {1, 2}, &result);
 
     CHECK(instance != nullptr);
     CHECK(result == VK_SUCCESS);
@@ -71,7 +71,7 @@ TEST_SUITE("Instance")
 
     VkResult result;
     auto instance =
-        grace::make_instance("Tests", layers, extensions, {0, 1, 0}, {1, 0}, &result);
+        grace::Instance::make("Tests", layers, extensions, {0, 1, 0}, {1, 0}, &result);
 
     CHECK(instance != nullptr);
     CHECK(result == VK_SUCCESS);

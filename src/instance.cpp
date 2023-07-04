@@ -59,26 +59,6 @@ auto make_instance_info(const VkApplicationInfo* app_info,
   return instance_info;
 }
 
-auto make_instance(const char* app_name,
-                   const std::vector<const char*>& layers,
-                   const std::vector<const char*>& extensions,
-                   const Version& app_version,
-                   const ApiVersion& vulkan_version,
-                   VkResult* result) -> UniqueInstance
-{
-  const auto app_info = make_application_info(app_name, app_version, vulkan_version);
-  const auto instance_info = make_instance_info(&app_info, layers, extensions);
-
-  VkInstance instance = VK_NULL_HANDLE;
-  const auto status = vkCreateInstance(&instance_info, nullptr, &instance);
-
-  if (result) {
-    *result = status;
-  }
-
-  return UniqueInstance {instance};
-}
-
 #ifdef GRACE_USE_SDL2
 
 auto get_required_instance_extensions(SDL_Window* window) -> std::vector<const char*>
@@ -99,5 +79,31 @@ auto get_required_instance_extensions(SDL_Window* window) -> std::vector<const c
 }
 
 #endif  // GRACE_USE_SDL2
+
+auto Instance::make(const char* app_name,
+                    const std::vector<const char*>& layers,
+                    const std::vector<const char*>& extensions,
+                    const Version& app_version,
+                    const ApiVersion& vulkan_version,
+                    VkResult* result) -> Instance
+{
+  const auto app_info = make_application_info(app_name, app_version, vulkan_version);
+  const auto instance_info = make_instance_info(&app_info, layers, extensions);
+
+  VkInstance instance_handle = VK_NULL_HANDLE;
+  const auto status = vkCreateInstance(&instance_info, nullptr, &instance_handle);
+
+  if (result) {
+    *result = status;
+  }
+
+  if (status == VK_SUCCESS) {
+    Instance instance;
+    instance.mInstance.reset(instance_handle);
+    return instance;
+  }
+
+  return {};
+}
 
 }  // namespace grace
