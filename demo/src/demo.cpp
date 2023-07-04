@@ -104,9 +104,10 @@ inline const std::vector kEnabledLayers = {"VK_LAYER_KHRONOS_validation"};
   enabled_features.samplerAnisotropy = VK_TRUE;
   enabled_features.fillModeNonSolid = VK_TRUE;
 
-  // These are our required device extensions
-  std::vector<const char*> extensions;
-  extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+  // Define our required device extensions
+  std::vector extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+                            VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME,
+                            VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME};
 #ifdef GRACE_USE_VULKAN_SUBSET
   extensions.push_back("VK_KHR_portability_subset");
 #endif  // GRACE_USE_VULKAN_SUBSET
@@ -282,7 +283,7 @@ int main(int, char**)
     std::cout << "Successfully created sampler\n";
   }
 
-  VkResult pipeline_cache_result = VK_SUCCESS;
+  VkResult pipeline_cache_result = VK_ERROR_UNKNOWN;
   auto pipeline_cache =
       grace::PipelineCache::make(device, nullptr, 0, 0, &pipeline_cache_result);
   if (!pipeline_cache) {
