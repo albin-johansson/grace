@@ -9,7 +9,12 @@ void WindowDeleter::operator()(SDL_Window* window) noexcept
   SDL_DestroyWindow(window);
 }
 
-auto make_window(const char* title, const int width, const int height) -> Window
+Window::Window(SDL_Window* window) noexcept
+    : mWindow {window}
+{
+}
+
+auto Window::make(const char* title, const int width, const int height) -> Window
 {
   const auto flags = SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_VULKAN;
   return Window {SDL_CreateWindow(title,
