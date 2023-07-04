@@ -251,7 +251,21 @@ int main(int, char**)
   }
 
   // TODO render pass
-  // TODO sampler
+
+  VkResult sampler_result = VK_ERROR_UNKNOWN;
+  auto sampler = gr::Sampler::make(device,
+                                   gpu,
+                                   VK_FILTER_LINEAR,
+                                   VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+                                   &sampler_result);
+  if (!sampler) {
+    std::cerr << "Could not create sampler: " << gr::to_string(sampler_result) << '\n';
+    return EXIT_FAILURE;
+  }
+  else {
+    std::cout << "Successfully created sampler\n";
+  }
+
   // TODO pipeline cache
   // TODO pipeline
   // TODO command pool
