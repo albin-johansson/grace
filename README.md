@@ -9,6 +9,8 @@ of getting Vulkan applications up and running. Below is a minimalistic example o
 excludes aspects such as proper error checking.
 
 ```C++
+#include <vector>  // vector
+
 #include <grace/grace.hpp>
 
 int main(int argc, char* argv[])
@@ -31,7 +33,7 @@ int main(int argc, char* argv[])
   auto gpu = grace::pick_physical_device(instance, surface, gpu_filter, gpu_rater);
 
   // Create logical device
-  const std::vector device_extensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+  const std::vector device_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
   auto device = grace::Device::make(gpu, surface, enabled_layers, device_extensions);
 
   // Create allocator
