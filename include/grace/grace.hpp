@@ -40,6 +40,7 @@
 #include "instance.hpp"
 #include "physical_device.hpp"
 #include "pipeline_cache.hpp"
+#include "pipeline_layout.hpp"
 #include "queue.hpp"
 #include "render_pass.hpp"
 #include "sampler.hpp"
