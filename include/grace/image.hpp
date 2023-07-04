@@ -11,7 +11,7 @@ namespace grace {
 /**
  * Creates an image creation information structure.
  *
- * \details This function makes the following assumptions:\n
+ * \details This function uses the following defaults:\n
  * <ul>
  *   <li>The tiling mode is set to `VK_IMAGE_TILING_OPTIMAL`.</li>
  *   <li>The sharing mode is set to `VK_SHARING_MODE_EXCLUSIVE`.</li>

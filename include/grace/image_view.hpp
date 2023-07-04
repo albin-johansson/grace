@@ -9,7 +9,7 @@ namespace grace {
 /**
  * Creates an image view creation information structure.
  *
- * \details This function makes the following assumptions:\n
+ * \details This function uses the following defaults:\n
  * <ul>
  *   <li>The component mappings are all set to `VK_COMPONENT_SWIZZLE_IDENTITY`.</li>
  *   <li>The base mipmap level is set to 0.</li>
