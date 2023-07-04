@@ -74,6 +74,17 @@ class Device final {
       const VkPhysicalDeviceFeatures* enabled_features = nullptr,
       VkResult* result = nullptr) -> Device;
 
+  /**
+   * Returns a queue associated with the device.
+   *
+   * \param queue_family_index the family index of the desired queue.
+   * \param queue_index        the index of the desired queue.
+   *
+   * \return a potentially null queue handle.
+   */
+  [[nodiscard]] auto get_queue(uint32 queue_family_index, uint32 queue_index = 0)
+      -> VkQueue;
+
   [[nodiscard]] auto get() noexcept -> VkDevice { return mDevice.get(); }
 
   [[nodiscard]] operator VkDevice() noexcept { return mDevice.get(); }

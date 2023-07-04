@@ -92,4 +92,12 @@ auto Device::make(VkPhysicalDevice gpu,
   return Device::make(gpu, device_info, result);
 }
 
+auto Device::get_queue(const uint32 queue_family_index, const uint32 queue_index)
+    -> VkQueue
+{
+  VkQueue queue = VK_NULL_HANDLE;
+  vkGetDeviceQueue(mDevice.get(), queue_family_index, queue_index, &queue);
+  return queue;
+}
+
 }  // namespace grace
