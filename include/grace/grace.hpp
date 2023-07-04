@@ -17,4 +17,5 @@
 #include "grace/queue.hpp"
 #include "grace/semaphore.hpp"
 #include "grace/surface.hpp"
+#include "grace/texture.hpp"
 #include "grace/version.hpp"
