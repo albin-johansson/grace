@@ -5,19 +5,21 @@
 
 #include <vulkan/vulkan.h>
 
-#include "grace/common.hpp"
+#include "common.hpp"
 
 namespace grace {
 
-struct DeviceDeleter final {
-  void operator()(VkDevice device) noexcept;
+struct DeviceQueueCreateInfos final {
+  float priority {1.0f};
+  std::vector<VkDeviceQueueCreateInfo> queues;
 };
-
-using UniqueDevice = std::unique_ptr<VkDevice_T, DeviceDeleter>;
 
 [[nodiscard]] auto make_device_queue_info(uint32 queue_family_index,
                                           const float* priority)
     -> VkDeviceQueueCreateInfo;
+
+[[nodiscard]] auto make_device_queue_infos(VkPhysicalDevice gpu, VkSurfaceKHR surface)
+    -> DeviceQueueCreateInfos;
 
 /**
  * Returns creation information for a logical device.
@@ -37,26 +39,57 @@ using UniqueDevice = std::unique_ptr<VkDevice_T, DeviceDeleter>;
     const VkPhysicalDeviceFeatures* enabled_features = nullptr,
     const void* next = nullptr) -> VkDeviceCreateInfo;
 
-struct DeviceSpec final {
-  std::vector<const char*> layers;                      ///< Names of required layers.
-  std::vector<const char*> extensions;                  ///< Names of required extensions.
-  const VkPhysicalDeviceFeatures* enabled_features {};  ///< Enabled GPU features.
-  const void* next {};  ///< Any `VkDeviceCreateInfo` extension.
-};
+class Device final {
+ public:
+  /**
+   * Attempts to create a Vulkan logical device.
+   *
+   * \param      gpu         the associated physical device.
+   * \param      device_info the device specification.
+   * \param[out] result      the resulting error code.
+   *
+   * \return a potentially null logical device.
+   */
+  [[nodiscard]] static auto make(VkPhysicalDevice gpu,
+                                 const VkDeviceCreateInfo& device_info,
+                                 VkResult* result = nullptr) -> Device;
 
-/**
- * Attempts to create a Vulkan logical device.
- *
- * \param      gpu     the associated physical device.
- * \param      surface the associated surface.
- * \param      spec    the device specification.
- * \param[out] result  the resulting error code.
- *
- * \return a logical device on success; a null pointer on failure.
- */
-[[nodiscard]] auto make_device(VkPhysicalDevice gpu,
-                               VkSurfaceKHR surface,
-                               const DeviceSpec& spec,
-                               VkResult* result = nullptr) -> UniqueDevice;
+  /**
+   * Attempts to create a Vulkan logical device.
+   *
+   * \param      gpu              the associated physical device.
+   * \param      surface          the associated surface.
+   * \param      layers           the names of required layers.
+   * \param      extensions       the names of the required extensions.
+   * \param      enabled_features the enabled GPU features.
+   * \param[out] result           the resulting error code.
+   *
+   * \return a potentially null logical device.
+   */
+  [[nodiscard]] static auto make(
+      VkPhysicalDevice gpu,
+      VkSurfaceKHR surface,
+      const std::vector<const char*>& layers,
+      const std::vector<const char*>& extensions,
+      const VkPhysicalDeviceFeatures* enabled_features = nullptr,
+      VkResult* result = nullptr) -> Device;
+
+  [[nodiscard]] auto get() noexcept -> VkDevice { return mDevice.get(); }
+
+  [[nodiscard]] operator VkDevice() noexcept { return mDevice.get(); }
+
+  /// Indicates whether the device contains a non-null handle.
+  [[nodiscard]] explicit operator bool() const noexcept
+  {
+    return mDevice != VK_NULL_HANDLE;
+  }
+
+ private:
+  struct DeviceDeleter final {
+    void operator()(VkDevice device) noexcept;
+  };
+
+  std::unique_ptr<VkDevice_T, DeviceDeleter> mDevice;
+};
 
 }  // namespace grace
