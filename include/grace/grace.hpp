@@ -45,6 +45,7 @@
 #include "render_pass.hpp"
 #include "sampler.hpp"
 #include "semaphore.hpp"
+#include "shader_module.hpp"
 #include "surface.hpp"
 #include "swapchain.hpp"
 #include "texture.hpp"
