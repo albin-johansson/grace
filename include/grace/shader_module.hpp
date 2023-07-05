@@ -49,22 +49,50 @@ namespace grace {
  * \param      file_path the file path to a binary file.
  * \param[out] result    the resulting error code.
  *
- * \return a (potentially empty) string representing a character stream.
+ * \return a (potentially empty) string representing a byte stream.
  */
 [[nodiscard]] auto read_binary_file(const char* file_path, VkResult* result = nullptr)
     -> std::string;
 
 class ShaderModule final {
  public:
+  /**
+   * Creates a shader module.
+   *
+   * \param      device      the associated logical device.
+   * \param      module_info the shader module specification.
+   * \param[out] result      the resulting error code.
+   *
+   * \return a potentially null shader module.
+   */
   [[nodiscard]] static auto make(VkDevice device,
                                  const VkShaderModuleCreateInfo& module_info,
                                  VkResult* result = nullptr) -> ShaderModule;
 
+  /**
+   * Creates a shader module.
+   *
+   * \param      device    the associated logical device.
+   * \param      code      the compiled shader code.
+   * \param      code_size the size of the code in bytes.
+   * \param[out] result    the resulting error code.
+   *
+   * \return a potentially null shader module.
+   */
   [[nodiscard]] static auto make(VkDevice device,
                                  const void* code,
                                  usize code_size,
                                  VkResult* result = nullptr) -> ShaderModule;
 
+  /**
+   * Creates a shader module based on a shader binary.
+   *
+   * \param      device    the associated logical device.
+   * \param      code_path the file path to the binary file with the compiled shader code.
+   * \param[out] result    the resulting error code.
+   *
+   * \return a potentially null shader module.
+   */
   [[nodiscard]] static auto read(VkDevice device,
                                  const char* code_path,
                                  VkResult* result = nullptr) -> ShaderModule;
@@ -81,6 +109,7 @@ class ShaderModule final {
 
   ~ShaderModule() noexcept;
 
+  /// Destroys the underlying shader module.
   void destroy() noexcept;
 
   [[nodiscard]] auto get() noexcept -> VkShaderModule { return mShaderModule; }
@@ -89,6 +118,7 @@ class ShaderModule final {
 
   [[nodiscard]] operator VkShaderModule() noexcept { return mShaderModule; }
 
+  /// Indicates whether the underlying shader module handle is non-null.
   [[nodiscard]] explicit operator bool() const noexcept
   {
     return mShaderModule != VK_NULL_HANDLE;
