@@ -6,6 +6,10 @@ jobs:
   macos-latest-ci:
     runs-on: macos-latest
     if: contains(github.event.head_commit.message, '[skip-ci]') == false
+    strategy:
+      fail-fast: false
+      matrix:
+        USE_SDL2: [ ON, OFF ]
     env:
       VCPKG_ROOT: ${{github.workspace}}/vcpkg
       VCPKG_TARGET_TRIPLET: x64-osx
@@ -41,20 +45,25 @@ jobs:
                    -DCMAKE_BUILD_TYPE=Debug \
                    -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}} \
                    -DGRACE_USE_VULKAN_SUBSET=OFF \
-                   -DGRACE_USE_SDL2=ON \
-                   -DGRACE_ENABLE_DEMO=ON \
-                   -DGRACE_ENABLE_TESTS=ON
+                   -DGRACE_USE_SDL2=${{matrix.USE_SDL2}} \
+                   -DGRACE_ENABLE_DEMO=${{matrix.USE_SDL2}} \
+                   -DGRACE_ENABLE_TESTS=${{matrix.USE_SDL2}}
 
       - name: Build
         run: ninja -C build
 
       - name: Run tests
+        if: ${{matrix.USE_SDL2}} == 'ON'
         working-directory: ./build/tests
         run: ./grace-tests
 
   ubuntu-latest-ci:
     runs-on: ubuntu-latest
     if: contains(github.event.head_commit.message, '[skip-ci]') == false
+    strategy:
+      fail-fast: false
+      matrix:
+        USE_SDL2: [ ON, OFF ]
     env:
       VCPKG_ROOT: ${{github.workspace}}/vcpkg
       VCPKG_TARGET_TRIPLET: x64-linux
@@ -110,20 +119,25 @@ jobs:
                    -DCMAKE_BUILD_TYPE=Debug \
                    -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}} \
                    -DGRACE_USE_VULKAN_SUBSET=OFF \
-                   -DGRACE_USE_SDL2=ON \
-                   -DGRACE_ENABLE_DEMO=ON \
-                   -DGRACE_ENABLE_TESTS=ON
+                   -DGRACE_USE_SDL2=${{matrix.USE_SDL2}} \
+                   -DGRACE_ENABLE_DEMO=${{matrix.USE_SDL2}} \
+                   -DGRACE_ENABLE_TESTS=${{matrix.USE_SDL2}}
 
       - name: Build
         run: ninja -C build
 
       - name: Run tests
+        if: ${{matrix.USE_SDL2}} == 'ON'
         working-directory: ./build/tests
         run: ./grace-tests
 
   windows-latest-ci:
     runs-on: windows-latest
     if: contains(github.event.head_commit.message, '[skip-ci]') == false
+    strategy:
+      fail-fast: false
+      matrix:
+        USE_SDL2: [ ON, OFF ]
     env:
       VCPKG_ROOT: ${{github.workspace}}/vcpkg
       VCPKG_TARGET_TRIPLET: x64-windows-static-md
@@ -157,9 +171,9 @@ jobs:
                    -DCMAKE_BUILD_TYPE=Debug `
                    -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}} `
                    -DGRACE_USE_VULKAN_SUBSET=OFF `
-                   -DGRACE_USE_SDL2=ON `
-                   -DGRACE_ENABLE_DEMO=ON `
-                   -DGRACE_ENABLE_TESTS=ON
+                   -DGRACE_USE_SDL2=${{matrix.USE_SDL2}} `
+                   -DGRACE_ENABLE_DEMO=${{matrix.USE_SDL2}} `
+                   -DGRACE_ENABLE_TESTS=${{matrix.USE_SDL2}}
 
       - name: Build
         run: ninja -C build
