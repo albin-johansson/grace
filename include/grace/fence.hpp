@@ -34,16 +34,6 @@ namespace grace {
 
 class Fence final {
  public:
-  Fence() noexcept = default;
-
-  Fence(Fence&& other) noexcept;
-  Fence(const Fence& other) = delete;
-
-  Fence& operator=(Fence&& other) noexcept;
-  Fence& operator=(const Fence& other) = delete;
-
-  ~Fence() noexcept;
-
   [[nodiscard]] static auto make(VkDevice device,
                                  const VkFenceCreateInfo& fence_info,
                                  VkResult* result = nullptr) -> Fence;
@@ -51,6 +41,16 @@ class Fence final {
   [[nodiscard]] static auto make(VkDevice device,
                                  VkFenceCreateFlags flags = 0,
                                  VkResult* result = nullptr) -> Fence;
+
+  Fence() noexcept = default;
+
+  Fence(Fence&& other) noexcept;
+  Fence(const Fence& other) = delete;
+
+  auto operator=(Fence&& other) noexcept -> Fence&;
+  auto operator=(const Fence& other) -> Fence& = delete;
+
+  ~Fence() noexcept;
 
   void destroy() noexcept;
 
@@ -61,6 +61,8 @@ class Fence final {
   [[nodiscard]] auto get() noexcept -> VkFence { return mFence; }
 
   [[nodiscard]] auto device() noexcept -> VkDevice { return mDevice; }
+
+  [[nodiscard]] operator VkFence() noexcept { return mFence; }
 
   [[nodiscard]] explicit operator bool() const noexcept
   {
