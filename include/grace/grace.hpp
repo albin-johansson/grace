@@ -39,6 +39,7 @@
 #include "image_view.hpp"
 #include "instance.hpp"
 #include "physical_device.hpp"
+#include "pipeline.hpp"
 #include "pipeline_cache.hpp"
 #include "pipeline_layout.hpp"
 #include "queue.hpp"
