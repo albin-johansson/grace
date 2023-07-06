@@ -24,8 +24,14 @@
 
 #include "grace/physical_device.hpp"
 
-#include <doctest/doctest.h>
+#include <gtest/gtest.h>
 
-TEST_SUITE("PhysicalDevice")
+#include "grace/instance.hpp"
+
+TEST(PhysicalDevice, GetPhysicalDevices)
 {
+  auto instance =
+      grace::Instance::make("Test", {}, {VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME});
+  const auto gpus = grace::get_physical_devices(instance);
+  EXPECT_FALSE(gpus.empty());
 }

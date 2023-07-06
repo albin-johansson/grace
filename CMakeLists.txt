@@ -33,6 +33,6 @@ if (GRACE_ENABLE_DEMO MATCHES ON)
 endif ()
 
 if (GRACE_ENABLE_TESTS MATCHES ON)
-  find_package(doctest CONFIG REQUIRED)
+  find_package(GTest CONFIG REQUIRED)
   add_subdirectory(tests)
 endif ()

@@ -18,6 +18,6 @@ target_include_directories(grace-tests PRIVATE ${PROJECT_SOURCE_DIR})
 target_link_libraries(grace-tests
                       PRIVATE
                       grace
-                      doctest::doctest
+                      GTest::gtest
                       $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
                       )

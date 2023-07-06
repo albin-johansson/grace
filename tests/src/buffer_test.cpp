@@ -24,21 +24,18 @@
 
 #include "grace/buffer.hpp"
 
-#include <doctest/doctest.h>
+#include <gtest/gtest.h>
 
-TEST_SUITE("Buffers")
+TEST(Buffers, MakeBufferInfo)
 {
-  TEST_CASE("make_buffer_info")
-  {
-    const auto buffer_info =
-        grace::make_buffer_info(1'000, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+  const auto buffer_info =
+      grace::make_buffer_info(1'000, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 
-    CHECK(buffer_info.sType == VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO);
-    CHECK(buffer_info.size == 1'000);
-    CHECK(buffer_info.usage == VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-    CHECK(buffer_info.pNext == nullptr);
-    CHECK(buffer_info.flags == 0);
-    CHECK(buffer_info.pQueueFamilyIndices == nullptr);
-    CHECK(buffer_info.sharingMode == VK_SHARING_MODE_EXCLUSIVE);
-  }
+  EXPECT_EQ(buffer_info.sType, VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO);
+  EXPECT_EQ(buffer_info.size, 1'000);
+  EXPECT_EQ(buffer_info.usage, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+  EXPECT_EQ(buffer_info.pNext, nullptr);
+  EXPECT_EQ(buffer_info.flags, 0);
+  EXPECT_EQ(buffer_info.pQueueFamilyIndices, nullptr);
+  EXPECT_EQ(buffer_info.sharingMode, VK_SHARING_MODE_EXCLUSIVE);
 }
