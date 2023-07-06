@@ -132,11 +132,11 @@ inline const std::vector kEnabledLayers = {"VK_LAYER_KHRONOS_validation"};
 
 [[nodiscard]] auto create_allocator(VkInstance instance,
                                     VkPhysicalDevice gpu,
-                                    VkDevice device) -> grace::UniqueAllocator
+                                    VkDevice device) -> grace::Allocator
 {
   VkResult result;
   if (auto allocator =
-          make_allocator(instance, gpu, device, kTargetVulkanVersion, &result)) {
+          grace::Allocator::make(instance, gpu, device, kTargetVulkanVersion, &result)) {
     std::cout << "Successfully created allocator\n";
     return allocator;
   }
@@ -231,7 +231,7 @@ int main(int, char**)
     return EXIT_FAILURE;
   }
 
-  auto swapchain = create_swapchain(window, surface, gpu, device, allocator.get());
+  auto swapchain = create_swapchain(window, surface, gpu, device, allocator);
   if (!swapchain) {
     return EXIT_FAILURE;
   }
