@@ -66,9 +66,9 @@ TEST_F(ShaderModuleFixture, ReadWithValidShader)
   EXPECT_TRUE(shader_module);
   EXPECT_EQ(shader_module.device(), mDevice);
   EXPECT_NE(shader_module.get(), VK_NULL_HANDLE);
-  EXPECT_NE(static_cast<VkShaderModule>(shader_module), shader_module.get());
+  EXPECT_EQ(static_cast<VkShaderModule>(shader_module), shader_module.get());
 
-  EXPECT_NO_THROW(shader_module.destroy());
+  shader_module.destroy();
   EXPECT_FALSE(shader_module);
   EXPECT_EQ(shader_module.device(), mDevice);
   EXPECT_EQ(shader_module.get(), VK_NULL_HANDLE);
