@@ -32,6 +32,25 @@
 #include "grace/instance.hpp"
 #include "grace/surface.hpp"
 
+// Shorthand for creating a test fixture that properly configures a test context.
+// Remember to #include <optional>
+#define GRACE_TEST_FIXTURE(Name)                   \
+  class Name : public testing::Test {              \
+   public:                                         \
+    static void SetUpTestSuite()                   \
+    {                                              \
+      mCtx = make_test_context();                  \
+    }                                              \
+                                                   \
+    static void TearDownTestSuite()                \
+    {                                              \
+      mCtx.reset();                                \
+    }                                              \
+                                                   \
+   protected:                                      \
+    inline static std::optional<TestContext> mCtx; \
+  }
+
 namespace grace {
 
 struct TestContext final {

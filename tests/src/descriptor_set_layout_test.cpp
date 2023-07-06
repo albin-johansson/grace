@@ -32,15 +32,7 @@
 
 using namespace grace;
 
-class DescriptorSetLayoutFixture : public testing::Test {
- public:
-  static void SetUpTestSuite() { mCtx = make_test_context(); }
-
-  static void TearDownTestSuite() { mCtx.reset(); }
-
- protected:
-  inline static std::optional<TestContext> mCtx;
-};
+GRACE_TEST_FIXTURE(DescriptorSetLayoutFixture);
 
 TEST_F(DescriptorSetLayoutFixture, MakeDescriptorSetLayoutBinding)
 {
