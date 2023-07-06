@@ -26,6 +26,7 @@
 
 #ifdef GRACE_USE_SDL2
 
+#include <iostream>   // cerr
 #include <stdexcept>  // runtime_error
 
 #include <SDL2/SDL.h>
@@ -36,10 +37,13 @@ namespace grace {
 SDL::SDL()
 {
   if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+    std::cerr << "Could not initialize SDL: " << SDL_GetError() << '\n';
     throw std::runtime_error {"Could not initialize SDL"};
   }
 
   if (SDL_Vulkan_LoadLibrary(nullptr) == -1) {
+    std::cerr << "Could not load Vulkan library: " << SDL_GetError() << '\n';
+
     SDL_Quit();
     throw std::runtime_error {"Could not load Vulkan library"};
   }
