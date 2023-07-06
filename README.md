@@ -33,7 +33,8 @@ int main(int argc, char* argv[])
   auto gpu = grace::pick_physical_device(instance, surface, gpu_filter, gpu_rater);
 
   // Create logical device
-  const std::vector device_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+  const std::vector device_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+                                         VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME};
   auto device = grace::Device::make(gpu, surface, enabled_layers, device_extensions);
 
   // Create allocator
@@ -51,10 +52,65 @@ int main(int argc, char* argv[])
                                           surface_format_filter,
                                           present_mode_filter);
 
-  // TODO render pass
-  // TODO sampler
-  // TODO pipeline cache
-  // TODO pipeline
+  // Create render pass
+  const auto subpass_stages = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+                              VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+  const auto main_subpass_access = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
+                                   VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+  const auto main_subpass_dependency = 
+      grace::make_subpass_dependency(VK_SUBPASS_EXTERNAL,
+                                     0,
+                                     subpass_stages,
+                                     subpass_stages,
+                                     0,
+                                     main_subpass_access);
+
+  auto render_pass = 
+      grace::RenderPassBuilder {device}
+          .color_attachment(swapchain.info().image_format)
+          .depth_attachment(swapchain.get_depth_buffer_format())
+          .begin_subpass()
+          .set_color_attachment(0)
+          .set_depth_attachment(1)
+          .end_subpass()
+          .subpass_dependency(main_subpass_dependency)
+          .build(&render_pass_result);
+
+  // Create pipeline cache
+  auto pipeline_cache = grace::PipelineCache::make(device);
+
+  // Create descriptor set layout
+  auto descriptor_set_layout =
+      grace::DescriptorSetLayoutBuilder {device}
+          .use_push_descriptors()
+          .descriptor(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+          .build();
+  
+  // Create pipeline layout
+  auto pipeline_layout =
+      grace::PipelineLayoutBuilder {device}
+          .descriptor_set_layout(descriptor_set_layout)
+          .build();
+
+  // Create pipeline
+  auto pipeline =
+      grace::GraphicsPipelineBuilder {device}
+          .with_layout(pipeline_layout)
+          .with_cache(pipeline_cache)
+          .with_render_pass(render_pass, 0)
+          .vertex_shader("shaders/demo.vert.spv")
+          .fragment_shader("shaders/demo.frag.spv")
+          .color_blend_attachment(false)
+          .viewport(0, 0, 800, 600)
+          .scissor(0, 0, 800, 600)
+          .build();
+
+  // Create sampler
+  auto sampler = grace::Sampler::make(device,
+                                      gpu,
+                                      VK_FILTER_LINEAR,
+                                      VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+
   // TODO command pool
   // TODO command buffer
 }
