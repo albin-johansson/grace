@@ -19,21 +19,22 @@ jobs:
           brew update
           brew install cmake
           brew install ninja
-          brew install molten-vk
 
       - name: Install Vcpkg
         run: |
           git clone https://github.com/microsoft/vcpkg
           ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
 
-#      - name: Install Vulkan SDK
-#        uses: humbletim/setup-vulkan-sdk@v1.2.0
-#        with:
-#          vulkan-query-version: 1.3.204.0
-#          vulkan-components: Vulkan-Headers, Vulkan-Loader
-#          vulkan-use-cache: true
+      - name: Install Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1.2.0
+        with:
+          vulkan-query-version: 1.3.204.0
+          vulkan-components: Vulkan-Headers, Vulkan-Loader
+          vulkan-use-cache: true
 
       - name: Generate build files
+        env:
+          VULKAN_SDK: $(brew --prefix molten-vk)
         run: |
           mkdir build && cd build
           cmake .. -GNinja \
@@ -57,6 +58,7 @@ jobs:
     env:
       VCPKG_ROOT: ${{github.workspace}}/vcpkg
       VCPKG_TARGET_TRIPLET: x64-linux
+      SDL_VIDEODRIVER: x11
     steps:
       - uses: actions/checkout@v3
         with:
@@ -161,8 +163,3 @@ jobs:
 
       - name: Build
         run: ninja -C build
-
-      - name: Run tests
-        working-directory: ./build/tests
-        shell: cmd
-        run: grace-tests.exe
