@@ -36,6 +36,20 @@ namespace grace {
 
 class Surface final {
  public:
+#ifdef GRACE_USE_SDL2
+
+  /**
+   * Creates a Vulkan surface.
+   *
+   * \param window   the associated window.
+   * \param instance the associated Vulkan instance.
+   *
+   * \return a potentially null surface.
+   */
+  [[nodiscard]] static auto make(SDL_Window* window, VkInstance instance) -> Surface;
+
+#endif  // GRACE_USE_SDL2
+
   Surface() noexcept = default;
 
   Surface(VkInstance instance, VkSurfaceKHR surface) noexcept;
@@ -47,12 +61,6 @@ class Surface final {
   auto operator=(Surface&& other) noexcept -> Surface&;
 
   ~Surface() noexcept;
-
-#ifdef GRACE_USE_SDL2
-
-  [[nodiscard]] static auto make(SDL_Window* window, VkInstance instance) -> Surface;
-
-#endif  // GRACE_USE_SDL2
 
   void destroy() noexcept;
 
