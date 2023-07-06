@@ -66,7 +66,7 @@ auto make_test_context() -> TestContext
                                             &indexing_features);
 
   ctx.device = Device::make(ctx.gpu, device_info);
-  ctx.allocator = make_allocator(ctx.instance, ctx.gpu, ctx.device);
+  ctx.allocator = Allocator::make(ctx.instance, ctx.gpu, ctx.device);
 
   return ctx;
 }

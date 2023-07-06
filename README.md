@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
   auto device = grace::Device::make(gpu, surface, enabled_layers, device_extensions);
 
   // Create allocator
-  auto allocator = grace::make_allocator(instance, gpu, device);
+  auto allocator = grace::Allocator::make(instance, gpu, device);
 
   // Create swapchain
   const VkExtent2D image_extent = {800, 600};

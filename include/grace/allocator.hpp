@@ -43,23 +43,42 @@ struct AllocatorDeleter final {
   void operator()(VmaAllocator allocator) noexcept;
 };
 
-using UniqueAllocator = std::unique_ptr<VmaAllocator_T, AllocatorDeleter>;
+class Allocator final {
+ public:
+  /**
+   * Attempts to create a Vulkan memory allocator.
+   *
+   * \param      instance       the associated instance.
+   * \param      gpu            the associated physical device.
+   * \param      device         the associated logical device.
+   * \param      vulkan_version the target Vulkan version.
+   * \param[out] result         the resulting error code.
+   *
+   * \return a potentially null allocator.
+   */
+  [[nodiscard]] static auto make(VkInstance instance,
+                                 VkPhysicalDevice gpu,
+                                 VkDevice device,
+                                 const ApiVersion& vulkan_version = {1, 2},
+                                 VkResult* result = nullptr) -> Allocator;
 
-/**
- * Attempts to create a Vulkan memory allocator from the VMA library.
- *
- * \param      instance       the associated instance.
- * \param      gpu            the associated physical device.
- * \param      device         the associated logical device.
- * \param      vulkan_version the target Vulkan version.
- * \param[out] result         the resulting error code.
- *
- * \return a Vulkan allocator on success; a null pointer on failure.
- */
-[[nodiscard]] auto make_allocator(VkInstance instance,
-                                  VkPhysicalDevice gpu,
-                                  VkDevice device,
-                                  const ApiVersion& vulkan_version = {1, 2},
-                                  VkResult* result = nullptr) -> UniqueAllocator;
+  Allocator() noexcept = default;
+
+  explicit Allocator(VmaAllocator allocator) noexcept;
+
+  void destroy() noexcept;
+
+  [[nodiscard]] auto get() noexcept -> VmaAllocator { return mAllocator.get(); }
+
+  [[nodiscard]] operator VmaAllocator() noexcept { return mAllocator.get(); }
+
+  [[nodiscard]] explicit operator bool() const noexcept
+  {
+    return mAllocator != VK_NULL_HANDLE;
+  }
+
+ private:
+  std::unique_ptr<VmaAllocator_T, AllocatorDeleter> mAllocator;
+};
 
 }  // namespace grace

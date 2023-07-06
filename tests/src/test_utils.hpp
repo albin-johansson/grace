@@ -40,7 +40,7 @@ struct TestContext final {
   Surface surface;
   VkPhysicalDevice gpu {VK_NULL_HANDLE};
   Device device;
-  UniqueAllocator allocator;
+  Allocator allocator;
 };
 
 [[nodiscard]] auto make_test_context() -> TestContext;
@@ -55,13 +55,25 @@ struct TestContext final {
     static void SetUpTestSuite()                          \
     {                                                     \
       mCtx = grace::make_test_context();                  \
+      mInstance = mCtx->instance.get();                   \
+      mSurface = mCtx->surface.get();                     \
+      mGPU = mCtx->gpu;                                   \
+      mDevice = mCtx->device.get();                       \
     }                                                     \
                                                           \
     static void TearDownTestSuite()                       \
     {                                                     \
       mCtx.reset();                                       \
+      mInstance = VK_NULL_HANDLE;                         \
+      mSurface = VK_NULL_HANDLE;                          \
+      mGPU = VK_NULL_HANDLE;                              \
+      mDevice = VK_NULL_HANDLE;                           \
     }                                                     \
                                                           \
    protected:                                             \
     inline static std::optional<grace::TestContext> mCtx; \
+    inline static VkInstance mInstance {VK_NULL_HANDLE};  \
+    inline static VkSurfaceKHR mSurface {VK_NULL_HANDLE}; \
+    inline static VkPhysicalDevice mGPU {VK_NULL_HANDLE}; \
+    inline static VkDevice mDevice {VK_NULL_HANDLE};      \
   }
