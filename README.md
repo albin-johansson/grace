@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
           .set_depth_attachment(1)
           .end_subpass()
           .subpass_dependency(main_subpass_dependency)
-          .build(&render_pass_result);
+          .build();
 
   // Create pipeline cache
   auto pipeline_cache = grace::PipelineCache::make(device);
@@ -101,8 +101,8 @@ int main(int argc, char* argv[])
           .vertex_shader("shaders/demo.vert.spv")
           .fragment_shader("shaders/demo.frag.spv")
           .color_blend_attachment(false)
-          .viewport(0, 0, 800, 600)
-          .scissor(0, 0, 800, 600)
+          .viewport(0, 0, image_extent.width, image_extent.height)
+          .scissor(0, 0, image_extent.width, image_extent.height)
           .build();
 
   // Create sampler
