@@ -43,7 +43,7 @@ auto make_viewport(const float x,
       .width = width,
       .height = height,
       .minDepth = min_depth,
-      .maxDepth = min_depth,
+      .maxDepth = max_depth,
   };
 }
 
