@@ -62,7 +62,7 @@ TEST_F(SemaphoreFixture, Make)
   EXPECT_NE(semaphore.get(), VK_NULL_HANDLE);
   EXPECT_EQ(static_cast<VkSemaphore>(semaphore), semaphore.get());
 
-  EXPECT_NO_THROW(semaphore.destroy());
+  semaphore.destroy();
   EXPECT_FALSE(semaphore);
   EXPECT_EQ(semaphore.device(), mDevice);
   EXPECT_EQ(semaphore.get(), VK_NULL_HANDLE);
