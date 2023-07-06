@@ -16,6 +16,7 @@ jobs:
 
       - name: Install system dependencies
         run: |
+          brew update
           brew install cmake
           brew install ninja
 
@@ -62,7 +63,21 @@ jobs:
 
       - name: Install system dependencies
         run: |
-          sudo apt install ninja-build
+          sudo apt install ninja-build \
+                           libx11-dev \
+                           libxft-dev \
+                           libxext-dev \
+                           libxi-dev \
+                           libxkbcommon-dev \
+                           libxmu-dev \
+                           libwayland-dev \
+                           libegl1-mesa-dev \
+                           libgles2-mesa-dev \
+                           libgl-dev \
+                           libibus-1.0-dev \
+                           libasound2-dev \
+                           libpulse-dev \
+                           xvfb
 
       - name: Install Vcpkg
         run: |
@@ -75,6 +90,15 @@ jobs:
           vulkan-query-version: 1.3.204.0
           vulkan-components: Vulkan-Headers, Vulkan-Loader
           vulkan-use-cache: true
+
+      - name: Emulate video device
+        run: |
+          /sbin/start-stop-daemon --start \
+                                  --pidfile /tmp/custom_xvfb_99.pid \
+                                  --make-pidfile \
+                                  --background \
+                                  --exec /usr/bin/Xvfb -- :99 -screen 0 800x600x24 -ac +extension GLX;
+          sleep 3
 
       - name: Generate build files
         run: |
@@ -139,4 +163,5 @@ jobs:
 
       - name: Run tests
         working-directory: ./build/tests
+        shell: cmd
         run: grace-tests.exe
