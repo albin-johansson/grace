@@ -51,7 +51,7 @@ jobs:
         run: ninja -C build
 
       - name: Run tests
-        if: ${{matrix.USE_SDL2}} == 'ON'
+        if: ${{matrix.USE_SDL2}} == ON
         working-directory: ./build/tests
         run: ./grace-tests
 
@@ -125,7 +125,7 @@ jobs:
         run: ninja -C build
 
       - name: Run tests
-        if: ${{matrix.USE_SDL2}} == 'ON'
+        if: ${{matrix.USE_SDL2}} == ON
         working-directory: ./build/tests
         run: ./grace-tests
 
