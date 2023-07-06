@@ -30,6 +30,8 @@
 
 using namespace grace;
 
+static_assert(WrapperType<Allocator, VmaAllocator>);
+
 GRACE_TEST_FIXTURE(AllocatorFixture);
 
 TEST_F(AllocatorFixture, MakeAllocationInfo)

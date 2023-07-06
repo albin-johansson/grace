@@ -264,7 +264,7 @@ auto Image::set_data(const CommandContext& ctx,
   VkResult result = VK_SUCCESS;
 
   auto staging_buffer = Buffer::for_staging(allocator, data_size, 0, &result);
-  if (!staging_buffer.has_value()) {
+  if (!staging_buffer) {
     return result;
   }
 

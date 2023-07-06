@@ -67,7 +67,7 @@ Buffer::Buffer(Buffer&& other) noexcept
 Buffer& Buffer::operator=(Buffer&& other) noexcept
 {
   if (this != &other) {
-    _destroy();
+    destroy();
 
     mAllocator = other.mAllocator;
     mBuffer = other.mBuffer;
@@ -83,13 +83,15 @@ Buffer& Buffer::operator=(Buffer&& other) noexcept
 
 Buffer::~Buffer() noexcept
 {
-  _destroy();
+  destroy();
 }
 
-void Buffer::_destroy() noexcept
+void Buffer::destroy() noexcept
 {
   if (mBuffer != VK_NULL_HANDLE) {
     vmaDestroyBuffer(mAllocator, mBuffer, mAllocation);
+    mBuffer = VK_NULL_HANDLE;
+    mAllocation = VK_NULL_HANDLE;
   }
 }
 

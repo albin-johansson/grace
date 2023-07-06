@@ -30,6 +30,8 @@
 
 using namespace grace;
 
+static_assert(WrapperType<DescriptorSetLayout, VkDescriptorSetLayout>);
+
 GRACE_TEST_FIXTURE(DescriptorSetLayoutFixture);
 
 TEST_F(DescriptorSetLayoutFixture, MakeDescriptorSetLayoutBinding)

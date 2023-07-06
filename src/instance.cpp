@@ -120,4 +120,9 @@ auto Instance::make(const char* app_name,
   return {};
 }
 
+void Instance::destroy() noexcept
+{
+  mInstance.reset(VK_NULL_HANDLE);
+}
+
 }  // namespace grace

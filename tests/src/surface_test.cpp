@@ -30,6 +30,8 @@
 
 using namespace grace;
 
+static_assert(WrapperType<Surface, VkSurfaceKHR>);
+
 GRACE_TEST_FIXTURE(SurfaceFixture);
 
 TEST_F(SurfaceFixture, Defaults)

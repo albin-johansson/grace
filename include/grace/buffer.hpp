@@ -47,8 +47,8 @@ class Buffer final {
   Buffer(Buffer&& other) noexcept;
   Buffer(const Buffer& other) = delete;
 
-  Buffer& operator=(Buffer&& other) noexcept;
-  Buffer& operator=(const Buffer& other) = delete;
+  auto operator=(Buffer&& other) noexcept -> Buffer&;
+  auto operator=(const Buffer& other) -> Buffer& = delete;
 
   /**
    * Creates an empty buffer.
@@ -149,12 +149,14 @@ class Buffer final {
    *
    * \return a potentially null buffer.
    */
-  [[nodiscard]] auto for_device_with_data(const CommandContext& ctx,
-                                          VmaAllocator allocator,
-                                          const void* data,
-                                          uint64 data_size,
-                                          VkBufferUsageFlags buffer_usage,
-                                          VkResult* result = nullptr) -> Buffer;
+  [[nodiscard]] static auto for_device_with_data(const CommandContext& ctx,
+                                                 VmaAllocator allocator,
+                                                 const void* data,
+                                                 uint64 data_size,
+                                                 VkBufferUsageFlags buffer_usage,
+                                                 VkResult* result = nullptr) -> Buffer;
+
+  void destroy() noexcept;
 
   /**
    * Updates the contents of the buffer.
@@ -170,23 +172,23 @@ class Buffer final {
   auto set_data(const void* data, uint64 data_size) -> VkResult;
 
   [[nodiscard]] auto get() noexcept -> VkBuffer { return mBuffer; }
+
   [[nodiscard]] auto allocator() noexcept -> VmaAllocator { return mAllocator; }
+
   [[nodiscard]] auto allocation() noexcept -> VmaAllocation { return mAllocation; }
 
-  /// Indicates whether the buffer features a non-null buffer handle.
-  [[nodiscard]] auto has_value() const noexcept -> bool
+  [[nodiscard]] operator VkBuffer() noexcept { return mBuffer; }
+
+  /// Indicates whether the underlying buffer handle is non-null.
+  [[nodiscard]] explicit operator bool() const noexcept
   {
     return mBuffer != VK_NULL_HANDLE;
   }
-
-  [[nodiscard]] explicit operator bool() const noexcept { return has_value(); }
 
  private:
   VmaAllocator mAllocator {VK_NULL_HANDLE};
   VkBuffer mBuffer {VK_NULL_HANDLE};
   VmaAllocation mAllocation {VK_NULL_HANDLE};
-
-  void _destroy() noexcept;
 };
 
 }  // namespace grace

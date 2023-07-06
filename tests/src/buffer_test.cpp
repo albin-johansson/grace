@@ -26,10 +26,15 @@
 
 #include <gtest/gtest.h>
 
+#include "test_utils.hpp"
+
+using namespace grace;
+
+static_assert(WrapperType<Buffer, VkBuffer>);
+
 TEST(Buffers, MakeBufferInfo)
 {
-  const auto buffer_info =
-      grace::make_buffer_info(1'000, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+  const auto buffer_info = make_buffer_info(1'000, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 
   EXPECT_EQ(buffer_info.sType, VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO);
   EXPECT_EQ(buffer_info.size, 1'000);

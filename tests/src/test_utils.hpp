@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include <concepts>  // default_initializable, destructible, movable, copyable, ...
 #include <optional>  // optional
 
 #include <SDL2/SDL.h>
@@ -49,7 +50,23 @@ struct TestContext final {
 
 [[nodiscard]] auto make_test_context() -> TestContext;
 
-}  // namespace grace
+// clang-format off
+
+template <typename T, typename VulkanHandle>
+concept WrapperType = std::default_initializable<T> &&         //
+                      std::destructible<T> &&                  //
+                      std::movable<T> &&                       //
+                      !std::copyable<T> &&                     //
+                      std::convertible_to<T, VulkanHandle> &&  //
+                      std::convertible_to<T, bool> &&          //
+                      requires(T obj) {
+                        obj.destroy();
+                        { obj.get() } -> std::same_as<VulkanHandle>;
+                      };
+
+// clang-format on
+
+};  // namespace grace
 
 // Shorthand for creating a test fixture that properly configures a test context.
 #define GRACE_TEST_FIXTURE(Name)                            \

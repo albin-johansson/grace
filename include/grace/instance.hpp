@@ -99,6 +99,8 @@ class Instance final {
                                  const ApiVersion& vulkan_version = {1, 2},
                                  VkResult* result = nullptr) -> Instance;
 
+  void destroy() noexcept;
+
   [[nodiscard]] auto get() noexcept -> VkInstance { return mInstance.get(); }
 
   [[nodiscard]] operator VkInstance() noexcept { return mInstance.get(); }

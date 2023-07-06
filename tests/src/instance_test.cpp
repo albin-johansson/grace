@@ -25,11 +25,13 @@
 #include "grace/instance.hpp"
 
 #include <gtest/gtest.h>
-#include <vulkan/vulkan.h>
 
 #include "grace/extras/window.hpp"
+#include "test_utils.hpp"
 
 using namespace grace;
+
+static_assert(WrapperType<Instance, VkInstance>);
 
 TEST(Instance, MakeApplicationInfo)
 {

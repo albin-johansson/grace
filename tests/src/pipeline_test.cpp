@@ -33,6 +33,8 @@
 
 using namespace grace;
 
+static_assert(WrapperType<Pipeline, VkPipeline>);
+
 GRACE_TEST_FIXTURE(PipelineFixture);
 
 TEST_F(PipelineFixture, MakeViewport)
