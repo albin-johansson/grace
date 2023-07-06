@@ -47,10 +47,11 @@ SpaceBeforeRangeBasedForLoopColon: true
 BreakBeforeBraces: Stroustrup
 BreakBeforeBinaryOperators: None
 BreakBeforeTernaryOperators: true
-BreakBeforeConceptDeclarations: true
+BreakBeforeConceptDeclarations: Always
 
-RequiresClausePosition: OwnLine
+RequiresClausePosition: WithPreceding
 IndentRequiresClause: true
+RequiresExpressionIndentation: OuterScope
 
 BreakStringLiterals: true
 BreakInheritanceList: AfterColon
