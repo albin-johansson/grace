@@ -19,3 +19,5 @@ target_link_libraries(grace-demo
                       grace
                       $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
                       )
+
+file(COPY "assets/shaders" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/assets")

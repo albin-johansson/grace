@@ -248,10 +248,8 @@ int main(int, char**)
                                      0,
                                      main_subpass_access);
 
-  grace::RenderPassBuilder render_pass_builder {device};
-
   VkResult render_pass_result = VK_ERROR_UNKNOWN;
-  auto main_render_pass = render_pass_builder  //
+  auto main_render_pass = grace::RenderPassBuilder {device}
                               .color_attachment(swapchain.info().image_format)
                               .depth_attachment(swapchain.get_depth_buffer_format())
                               .begin_subpass()
@@ -295,7 +293,54 @@ int main(int, char**)
     std::cout << "Successfully created pipeline cache\n";
   }
 
-  // TODO pipeline
+  VkResult descriptor_set_layout_result = VK_ERROR_UNKNOWN;
+  auto descriptor_set_layout =
+      grace::DescriptorSetLayoutBuilder {device}
+          .use_push_descriptors()
+          .allow_partially_bound_descriptors()
+          .descriptor(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+          .build(&descriptor_set_layout_result);
+  if (!descriptor_set_layout) {
+    return EXIT_FAILURE;
+  }
+
+  VkResult pipeline_layout_result = VK_ERROR_UNKNOWN;
+  auto pipeline_layout =
+      grace::PipelineLayoutBuilder {device}
+          .descriptor_set_layout(descriptor_set_layout)
+          .push_constant(VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 16)
+          .build(&pipeline_layout_result);
+  if (!pipeline_layout) {
+    return EXIT_FAILURE;
+  }
+
+  VkResult pipeline_result = VK_ERROR_UNKNOWN;
+  auto pipeline =
+      grace::GraphicsPipelineBuilder {device}
+          .with_layout(pipeline_layout)
+          .with_cache(pipeline_cache)
+          .with_render_pass(main_render_pass, 0)
+          .vertex_shader("assets/shaders/main.vert.spv")
+          .fragment_shader("assets/shaders/main.frag.spv")
+          .vertex_input_binding(0, 8 * sizeof(float))
+          .vertex_attribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0)
+          .vertex_attribute(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float))
+          .vertex_attribute(0, 2, VK_FORMAT_R32G32_SFLOAT, 6 * sizeof(float))
+          .color_blend_attachment(false)  // TODO need to track index
+          .viewport(0, 0, 800, 600)
+          .scissor(0, 0, 800, 600)
+          .dynamic_state(VK_DYNAMIC_STATE_VIEWPORT)
+          .dynamic_state(VK_DYNAMIC_STATE_SCISSOR)
+          .build(&pipeline_result);
+  if (!pipeline) {
+    std::cerr << "Could not create pipeline: " << grace::to_string(pipeline_result)
+              << '\n';
+    return EXIT_FAILURE;
+  }
+  else {
+    std::cout << "Successfully created pipeline\n";
+  }
+
   // TODO command pool
   // TODO command buffer
 
