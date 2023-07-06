@@ -76,7 +76,10 @@ TEST_F(PhysicalDeviceFixture, GetUniqueQueueFamilyIndices)
   const auto queue_family_indices = get_unique_queue_family_indices(mGPU, mSurface);
 
   for (const auto queue_family_index : queue_family_indices) {
-    EXPECT_EQ(std::ranges::count(queue_family_indices, queue_family_index), 1);
+    EXPECT_EQ(std::count(queue_family_indices.begin(),
+                         queue_family_indices.end(),
+                         queue_family_index),
+              1);
   }
 }
 
