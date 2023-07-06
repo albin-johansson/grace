@@ -30,9 +30,9 @@
 
 using namespace grace;
 
-GRACE_TEST_FIXTURE(AllocatorTestFixture);
+GRACE_TEST_FIXTURE(AllocatorFixture);
 
-TEST_F(AllocatorTestFixture, MakeAllocationInfo)
+TEST_F(AllocatorFixture, MakeAllocationInfo)
 {
   const auto required_mem_props = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
   const auto preferred_mem_props = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
@@ -54,7 +54,7 @@ TEST_F(AllocatorTestFixture, MakeAllocationInfo)
   EXPECT_EQ(allocation_info.preferredFlags, preferred_mem_props);
 }
 
-TEST_F(AllocatorTestFixture, Defaults)
+TEST_F(AllocatorFixture, Defaults)
 {
   Allocator allocator;
   EXPECT_FALSE(allocator);
@@ -63,7 +63,7 @@ TEST_F(AllocatorTestFixture, Defaults)
   EXPECT_NO_THROW(allocator.destroy());
 }
 
-TEST_F(AllocatorTestFixture, Make)
+TEST_F(AllocatorFixture, Make)
 {
   VkResult result = VK_ERROR_UNKNOWN;
   auto allocator = Allocator::make(mInstance, mGPU, mDevice, {1, 2}, &result);

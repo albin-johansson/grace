@@ -24,17 +24,15 @@
 
 #include "grace/surface.hpp"
 
-#include <optional>  // optional
-
 #include <gtest/gtest.h>
 
 #include "test_utils.hpp"
 
 using namespace grace;
 
-GRACE_TEST_FIXTURE(SurfaceTestFixture);
+GRACE_TEST_FIXTURE(SurfaceFixture);
 
-TEST_F(SurfaceTestFixture, Defaults)
+TEST_F(SurfaceFixture, Defaults)
 {
   Surface surface;
   EXPECT_FALSE(surface);
@@ -42,9 +40,9 @@ TEST_F(SurfaceTestFixture, Defaults)
   EXPECT_EQ(static_cast<VkSurfaceKHR>(surface), VK_NULL_HANDLE);
 }
 
-TEST_F(SurfaceTestFixture, Make)
+TEST_F(SurfaceFixture, Make)
 {
-  auto surface = Surface::make(mCtx->window, mCtx->instance);
+  auto surface = Surface::make(mWindow, mInstance);
   EXPECT_TRUE(surface);
   EXPECT_NE(surface.get(), VK_NULL_HANDLE);
   EXPECT_NE(static_cast<VkSurfaceKHR>(surface), VK_NULL_HANDLE);

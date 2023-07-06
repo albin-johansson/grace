@@ -24,8 +24,6 @@
 
 #include "grace/pipeline.hpp"
 
-#include <optional>  // optional
-
 #include <gtest/gtest.h>
 
 #include "grace/descriptor_set_layout.hpp"
@@ -35,9 +33,9 @@
 
 using namespace grace;
 
-GRACE_TEST_FIXTURE(PipelineTestFixture);
+GRACE_TEST_FIXTURE(PipelineFixture);
 
-TEST_F(PipelineTestFixture, MakeViewport)
+TEST_F(PipelineFixture, MakeViewport)
 {
   const float x = 123;
   const float y = 83;
@@ -56,7 +54,7 @@ TEST_F(PipelineTestFixture, MakeViewport)
   EXPECT_EQ(viewport.maxDepth, max_depth);
 }
 
-TEST_F(PipelineTestFixture, MakeRect2D)
+TEST_F(PipelineFixture, MakeRect2D)
 {
   const int32 x = -24;
   const int32 y = 812;
@@ -71,7 +69,7 @@ TEST_F(PipelineTestFixture, MakeRect2D)
   EXPECT_EQ(rect.extent.height, height);
 }
 
-TEST_F(PipelineTestFixture, MakePipelineShaderStageInfo)
+TEST_F(PipelineFixture, MakePipelineShaderStageInfo)
 {
   const auto stage = VK_SHADER_STAGE_FRAGMENT_BIT;
   const VkSpecializationInfo specialization_info = {};
@@ -91,7 +89,7 @@ TEST_F(PipelineTestFixture, MakePipelineShaderStageInfo)
   EXPECT_STREQ(info.pName, entry_name);
 }
 
-TEST_F(PipelineTestFixture, MakePipelineVertexInputStateInfo)
+TEST_F(PipelineFixture, MakePipelineVertexInputStateInfo)
 {
   const VkVertexInputBindingDescription binding_desc = {
       .binding = 42,
@@ -121,7 +119,7 @@ TEST_F(PipelineTestFixture, MakePipelineVertexInputStateInfo)
   EXPECT_EQ(info.pVertexBindingDescriptions, bindings.data());
 }
 
-TEST_F(PipelineTestFixture, MakePipelineInputAssemblyStateInfo)
+TEST_F(PipelineFixture, MakePipelineInputAssemblyStateInfo)
 {
   const auto topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
   const auto info = make_pipeline_input_assembly_state_info(topology);
@@ -133,7 +131,7 @@ TEST_F(PipelineTestFixture, MakePipelineInputAssemblyStateInfo)
   EXPECT_EQ(info.primitiveRestartEnable, VK_FALSE);
 }
 
-TEST_F(PipelineTestFixture, MakePipelineTessellationStateInfo)
+TEST_F(PipelineFixture, MakePipelineTessellationStateInfo)
 {
   const uint32 patch_control_points = 42;
   const auto info = make_pipeline_tessellation_state_info(patch_control_points);
@@ -144,7 +142,7 @@ TEST_F(PipelineTestFixture, MakePipelineTessellationStateInfo)
   EXPECT_EQ(info.patchControlPoints, patch_control_points);
 }
 
-TEST_F(PipelineTestFixture, MakePipelineViewportStateInfo)
+TEST_F(PipelineFixture, MakePipelineViewportStateInfo)
 {
   const std::vector viewports = {VkViewport {}, VkViewport {}};
   const std::vector scissors = {VkRect2D {}, VkRect2D {}, VkRect2D {}};
@@ -159,7 +157,7 @@ TEST_F(PipelineTestFixture, MakePipelineViewportStateInfo)
   EXPECT_EQ(info.pScissors, scissors.data());
 }
 
-TEST_F(PipelineTestFixture, MakePipelineColorBlendStateInfo)
+TEST_F(PipelineFixture, MakePipelineColorBlendStateInfo)
 {
   const auto enabled = VK_TRUE;
   const auto logic_op = VK_LOGIC_OP_AND;
@@ -185,7 +183,7 @@ TEST_F(PipelineTestFixture, MakePipelineColorBlendStateInfo)
   EXPECT_EQ(info.blendConstants[3], blend_constants[3]);
 }
 
-TEST_F(PipelineTestFixture, MakePipelineDynamicStateInfo)
+TEST_F(PipelineFixture, MakePipelineDynamicStateInfo)
 {
   const std::vector states = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
   const auto info = make_pipeline_dynamic_state_info(states);
@@ -197,7 +195,7 @@ TEST_F(PipelineTestFixture, MakePipelineDynamicStateInfo)
   EXPECT_EQ(info.pDynamicStates, states.data());
 }
 
-TEST_F(PipelineTestFixture, PipelineDefaults)
+TEST_F(PipelineFixture, PipelineDefaults)
 {
   Pipeline pipeline;
   EXPECT_FALSE(pipeline);
@@ -207,9 +205,9 @@ TEST_F(PipelineTestFixture, PipelineDefaults)
   EXPECT_NO_THROW(pipeline.destroy());
 }
 
-TEST_F(PipelineTestFixture, GraphicsPipelineBuilderDefaults)
+TEST_F(PipelineFixture, GraphicsPipelineBuilderDefaults)
 {
-  const auto builder = GraphicsPipelineBuilder {mCtx->device};
+  const auto builder = GraphicsPipelineBuilder {mDevice};
 
   {
     const auto vertex_input_state = builder.get_vertex_input_state_info();
@@ -345,14 +343,14 @@ TEST_F(PipelineTestFixture, GraphicsPipelineBuilderDefaults)
   }
 }
 
-TEST_F(PipelineTestFixture, GraphicsPipelineBuilderMinimalPipeline)
+TEST_F(PipelineFixture, GraphicsPipelineBuilderMinimalPipeline)
 {
   VkResult result = VK_ERROR_UNKNOWN;
 
   const auto subpass_stages = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
                               VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
   auto render_pass =
-      RenderPassBuilder {mCtx->device}
+      RenderPassBuilder {mDevice}
           .color_attachment(VK_FORMAT_B8G8R8A8_UNORM)
           .begin_subpass()
           .set_color_attachment(0)
@@ -370,7 +368,7 @@ TEST_F(PipelineTestFixture, GraphicsPipelineBuilderMinimalPipeline)
   ASSERT_TRUE(render_pass);
 
   auto descriptor_set_layout =
-      DescriptorSetLayoutBuilder {mCtx->device}
+      DescriptorSetLayoutBuilder {mDevice}
           .use_push_descriptors()
           .descriptor(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
           .build(&result);
@@ -379,7 +377,7 @@ TEST_F(PipelineTestFixture, GraphicsPipelineBuilderMinimalPipeline)
   ASSERT_TRUE(descriptor_set_layout);
 
   auto pipeline_layout =
-      PipelineLayoutBuilder {mCtx->device}
+      PipelineLayoutBuilder {mDevice}
           .descriptor_set_layout(descriptor_set_layout)
           .push_constant(VK_SHADER_STAGE_VERTEX_BIT, 0, 16 * sizeof(float))
           .build(&result);
@@ -388,7 +386,7 @@ TEST_F(PipelineTestFixture, GraphicsPipelineBuilderMinimalPipeline)
   ASSERT_TRUE(pipeline_layout);
 
   auto pipeline =
-      GraphicsPipelineBuilder {mCtx->device}
+      GraphicsPipelineBuilder {mDevice}
           .with_layout(pipeline_layout)
           .with_render_pass(render_pass, 0)
           .vertex_shader("assets/shaders/test.vert.spv")

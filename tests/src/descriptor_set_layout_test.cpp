@@ -24,8 +24,6 @@
 
 #include "grace/descriptor_set_layout.hpp"
 
-#include <optional>  // optional
-
 #include <gtest/gtest.h>
 
 #include "test_utils.hpp"
@@ -100,22 +98,22 @@ TEST_F(DescriptorSetLayoutFixture, Make)
   const auto layout_info = make_descriptor_set_layout_info(bindings);
 
   VkResult result = VK_ERROR_UNKNOWN;
-  auto layout = DescriptorSetLayout::make(mCtx->device, layout_info, &result);
+  auto layout = DescriptorSetLayout::make(mDevice, layout_info, &result);
 
   ASSERT_EQ(result, VK_SUCCESS);
   EXPECT_TRUE(layout);
+  EXPECT_EQ(layout.device(), mDevice);
   EXPECT_NE(layout.get(), VK_NULL_HANDLE);
-  EXPECT_NE(layout.device(), VK_NULL_HANDLE);
 
   layout.destroy();
   EXPECT_FALSE(layout);
+  EXPECT_EQ(layout.device(), mDevice);
   EXPECT_EQ(layout.get(), VK_NULL_HANDLE);
-  EXPECT_NE(layout.device(), VK_NULL_HANDLE);
 }
 
 TEST_F(DescriptorSetLayoutFixture, Build)
 {
-  DescriptorSetLayoutBuilder builder {mCtx->device};
+  DescriptorSetLayoutBuilder builder {mDevice};
 
   VkResult result = VK_ERROR_UNKNOWN;
   auto layout =
@@ -130,6 +128,7 @@ TEST_F(DescriptorSetLayoutFixture, Build)
 
   ASSERT_EQ(result, VK_SUCCESS);
   EXPECT_TRUE(layout);
+  EXPECT_EQ(layout.device(), mDevice);
   EXPECT_NE(layout.get(), VK_NULL_HANDLE);
-  EXPECT_EQ(layout.device(), mCtx->device.get());
+  EXPECT_EQ(static_cast<VkDescriptorSetLayout>(layout), layout.get());
 }

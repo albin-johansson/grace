@@ -24,6 +24,10 @@
 
 #pragma once
 
+#include <optional>  // optional
+
+#include <SDL2/SDL.h>
+#include <vk_mem_alloc.h>
 #include <vulkan/vulkan.h>
 
 #include "grace/allocator.hpp"
@@ -48,32 +52,39 @@ struct TestContext final {
 }  // namespace grace
 
 // Shorthand for creating a test fixture that properly configures a test context.
-// Remember to #include <optional>
-#define GRACE_TEST_FIXTURE(Name)                          \
-  class Name : public testing::Test {                     \
-   public:                                                \
-    static void SetUpTestSuite()                          \
-    {                                                     \
-      mCtx = grace::make_test_context();                  \
-      mInstance = mCtx->instance.get();                   \
-      mSurface = mCtx->surface.get();                     \
-      mGPU = mCtx->gpu;                                   \
-      mDevice = mCtx->device.get();                       \
-    }                                                     \
-                                                          \
-    static void TearDownTestSuite()                       \
-    {                                                     \
-      mCtx.reset();                                       \
-      mInstance = VK_NULL_HANDLE;                         \
-      mSurface = VK_NULL_HANDLE;                          \
-      mGPU = VK_NULL_HANDLE;                              \
-      mDevice = VK_NULL_HANDLE;                           \
-    }                                                     \
-                                                          \
-   protected:                                             \
-    inline static std::optional<grace::TestContext> mCtx; \
-    inline static VkInstance mInstance {VK_NULL_HANDLE};  \
-    inline static VkSurfaceKHR mSurface {VK_NULL_HANDLE}; \
-    inline static VkPhysicalDevice mGPU {VK_NULL_HANDLE}; \
-    inline static VkDevice mDevice {VK_NULL_HANDLE};      \
+#define GRACE_TEST_FIXTURE(Name)                            \
+  class Name : public testing::Test {                       \
+   public:                                                  \
+    static void SetUpTestSuite()                            \
+    {                                                       \
+      mCtx = grace::make_test_context();                    \
+      mWindow = mCtx->window.get();                         \
+      mInstance = mCtx->instance.get();                     \
+      mSurface = mCtx->surface.get();                       \
+      mGPU = mCtx->gpu;                                     \
+      mDevice = mCtx->device.get();                         \
+      mAllocator = mCtx->allocator.get();                   \
+    }                                                       \
+                                                            \
+    static void TearDownTestSuite()                         \
+    {                                                       \
+      mCtx.reset();                                         \
+      mWindow = nullptr;                                    \
+      mInstance = VK_NULL_HANDLE;                           \
+      mSurface = VK_NULL_HANDLE;                            \
+      mGPU = VK_NULL_HANDLE;                                \
+      mDevice = VK_NULL_HANDLE;                             \
+      mAllocator = VK_NULL_HANDLE;                          \
+    }                                                       \
+                                                            \
+   private:                                                 \
+    inline static std::optional<grace::TestContext> mCtx;   \
+                                                            \
+   protected:                                               \
+    inline static SDL_Window* mWindow {};                   \
+    inline static VkInstance mInstance {VK_NULL_HANDLE};    \
+    inline static VkSurfaceKHR mSurface {VK_NULL_HANDLE};   \
+    inline static VkPhysicalDevice mGPU {VK_NULL_HANDLE};   \
+    inline static VkDevice mDevice {VK_NULL_HANDLE};        \
+    inline static VmaAllocator mAllocator {VK_NULL_HANDLE}; \
   }
