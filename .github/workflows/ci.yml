@@ -35,19 +35,19 @@ jobs:
         run: |
           mkdir build && cd build
           cmake .. -GNinja \
-            -DCMAKE_BUILD_TYPE=Debug \
-            -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}} \
-            -DGRACE_USE_VULKAN_SUBSET=OFF \
-            -DGRACE_USE_SDL2=ON \
-            -DGRACE_ENABLE_DEMO=ON \
-            -DGRACE_ENABLE_TESTS=ON
+                   -DCMAKE_BUILD_TYPE=Debug \
+                   -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}} \
+                   -DGRACE_USE_VULKAN_SUBSET=OFF \
+                   -DGRACE_USE_SDL2=ON \
+                   -DGRACE_ENABLE_DEMO=ON \
+                   -DGRACE_ENABLE_TESTS=ON
 
       - name: Build
         run: ninja -C build
 
-      # - name: Run tests
-      #   working-directory: ./build/tests
-      #   run: ./grace-tests
+      - name: Run tests
+        working-directory: ./build/tests
+        run: ./grace-tests
 
   ubuntu-latest-ci:
     runs-on: ubuntu-latest
@@ -80,19 +80,19 @@ jobs:
         run: |
           mkdir build && cd build
           cmake .. -GNinja \
-            -DCMAKE_BUILD_TYPE=Debug \
-            -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}} \
-            -DGRACE_USE_VULKAN_SUBSET=OFF \
-            -DGRACE_USE_SDL2=ON \
-            -DGRACE_ENABLE_DEMO=ON \
-            -DGRACE_ENABLE_TESTS=ON
+                   -DCMAKE_BUILD_TYPE=Debug \
+                   -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}} \
+                   -DGRACE_USE_VULKAN_SUBSET=OFF \
+                   -DGRACE_USE_SDL2=ON \
+                   -DGRACE_ENABLE_DEMO=ON \
+                   -DGRACE_ENABLE_TESTS=ON
 
       - name: Build
         run: ninja -C build
 
-      # - name: Run tests
-      #   working-directory: ./build/tests
-      #   run: ./grace-tests
+      - name: Run tests
+        working-directory: ./build/tests
+        run: ./grace-tests
 
   windows-latest-ci:
     runs-on: windows-latest
@@ -127,16 +127,16 @@ jobs:
         run: |
           mkdir build && cd build
           cmake .. -GNinja `
-            -DCMAKE_BUILD_TYPE=Debug `
-            -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}} `
-            -DGRACE_USE_VULKAN_SUBSET=OFF `
-            -DGRACE_USE_SDL2=ON `
-            -DGRACE_ENABLE_DEMO=ON `
-            -DGRACE_ENABLE_TESTS=ON
+                   -DCMAKE_BUILD_TYPE=Debug `
+                   -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}} `
+                   -DGRACE_USE_VULKAN_SUBSET=OFF `
+                   -DGRACE_USE_SDL2=ON `
+                   -DGRACE_ENABLE_DEMO=ON `
+                   -DGRACE_ENABLE_TESTS=ON
 
       - name: Build
         run: ninja -C build
 
-      # - name: Run tests
-      #   working-directory: ./build/tests
-      #   run: grace-tests.exe
+      - name: Run tests
+        working-directory: ./build/tests
+        run: grace-tests.exe
