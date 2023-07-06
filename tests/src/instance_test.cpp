@@ -95,8 +95,6 @@ TEST(Instance, MakeInstance)
   EXPECT_TRUE(instance);
 }
 
-#ifdef GRACE_USE_SDL2
-
 TEST(Instance, MakeInstanceWithGetRequiredInstanceExtensions)
 {
   auto window = Window::make("Test", 800, 600);
@@ -110,5 +108,3 @@ TEST(Instance, MakeInstanceWithGetRequiredInstanceExtensions)
   EXPECT_EQ(result, VK_SUCCESS);
   EXPECT_TRUE(instance);
 }
-
-#endif  // GRACE_USE_SDL2
