@@ -24,6 +24,8 @@
 
 #include "grace/physical_device.hpp"
 
+#include <algorithm>  // count
+
 #include <gtest/gtest.h>
 
 #include "test_utils.hpp"
@@ -36,4 +38,64 @@ TEST_F(PhysicalDeviceFixture, GetPhysicalDevices)
 {
   const auto gpus = get_physical_devices(mCtx->instance);
   EXPECT_FALSE(gpus.empty());
+}
+
+TEST_F(PhysicalDeviceFixture, GetExtensions)
+{
+  const auto extensions = get_extensions(mCtx->gpu);
+  EXPECT_FALSE(extensions.empty());
+}
+
+TEST_F(PhysicalDeviceFixture, GetQueueFamilies)
+{
+  const auto queue_families = get_queue_families(mCtx->gpu);
+  EXPECT_FALSE(queue_families.empty());
+}
+
+TEST_F(PhysicalDeviceFixture, GetSurfaceFormats)
+{
+  const auto surface_formats = get_surface_formats(mCtx->gpu, mCtx->surface);
+  EXPECT_FALSE(surface_formats.empty());
+}
+
+TEST_F(PhysicalDeviceFixture, GetPresentModes)
+{
+  const auto present_modes = get_present_modes(mCtx->gpu, mCtx->surface);
+  EXPECT_FALSE(present_modes.empty());
+}
+
+TEST_F(PhysicalDeviceFixture, GetQueueFamilyIndices)
+{
+  const auto queue_family_indices = get_queue_family_indices(mCtx->gpu, mCtx->surface);
+  EXPECT_TRUE(queue_family_indices.graphics.has_value());
+  EXPECT_TRUE(queue_family_indices.present.has_value());
+}
+
+TEST_F(PhysicalDeviceFixture, GetUniqueQueueFamilyIndices)
+{
+  const auto queue_family_indices =
+      get_unique_queue_family_indices(mCtx->gpu, mCtx->surface);
+
+  for (const auto queue_family_index : queue_family_indices) {
+    EXPECT_EQ(std::ranges::count(queue_family_indices, queue_family_index), 1);
+  }
+}
+
+TEST_F(PhysicalDeviceFixture, GetSwapchainSupport)
+{
+  const auto support = get_swapchain_support(mCtx->gpu, mCtx->surface);
+  EXPECT_FALSE(support.surface_formats.empty());
+  EXPECT_FALSE(support.present_modes.empty());
+}
+
+TEST_F(PhysicalDeviceFixture, PickPhysicalDevice)
+{
+  auto true_filter = [](VkPhysicalDevice, VkSurfaceKHR) { return true; };
+  auto false_filter = [](VkPhysicalDevice, VkSurfaceKHR) { return false; };
+  auto rater = [](VkPhysicalDevice) { return 0; };
+
+  EXPECT_NE(pick_physical_device(mCtx->instance, mCtx->surface, true_filter, rater),
+            VK_NULL_HANDLE);
+  EXPECT_EQ(pick_physical_device(mCtx->instance, mCtx->surface, false_filter, rater),
+            VK_NULL_HANDLE);
 }
