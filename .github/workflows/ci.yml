@@ -37,8 +37,6 @@ jobs:
           vulkan-use-cache: true
 
       - name: Generate build files
-        env:
-          VULKAN_SDK: $(brew --prefix molten-vk)
         run: |
           mkdir build && cd build
           cmake .. -GNinja \
