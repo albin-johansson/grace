@@ -73,6 +73,7 @@ jobs:
 
       - name: Install system dependencies
         run: |
+          sudo apt update
           sudo apt install ninja-build \
                            libx11-dev \
                            libxft-dev \
