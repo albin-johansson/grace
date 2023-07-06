@@ -14,7 +14,15 @@
       "features": [
         "vulkan",
         "x11"
-      ]
+      ],
+      "platform": "linux"
+    },
+    {
+      "name": "sdl2",
+      "features": [
+        "vulkan"
+      ],
+      "platform": "!linux"
     },
     "gtest"
   ]
