@@ -26,12 +26,14 @@
 
 #include <gtest/gtest.h>
 
-#include "grace/instance.hpp"
+#include "test_utils.hpp"
 
-TEST(PhysicalDevice, GetPhysicalDevices)
+using namespace grace;
+
+GRACE_TEST_FIXTURE(PhysicalDeviceFixture);
+
+TEST_F(PhysicalDeviceFixture, GetPhysicalDevices)
 {
-  auto instance =
-      grace::Instance::make("Test", {}, {VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME});
-  const auto gpus = grace::get_physical_devices(instance);
+  const auto gpus = get_physical_devices(mCtx->instance);
   EXPECT_FALSE(gpus.empty());
 }
