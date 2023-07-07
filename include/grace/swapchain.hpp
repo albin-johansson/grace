@@ -120,6 +120,10 @@ class Swapchain final {
   auto acquire_next_image(VkSemaphore semaphore = VK_NULL_HANDLE,
                           VkFence fence = VK_NULL_HANDLE) -> VkResult;
 
+  auto present_image(VkQueue queue,
+                     const VkSemaphore* wait_semaphores = nullptr,
+                     uint32 wait_semaphore_count = 0) -> VkResult;
+
   [[nodiscard]] auto get_current_framebuffer() -> VkFramebuffer;
 
   [[nodiscard]] auto get_current_image_index() -> uint32;

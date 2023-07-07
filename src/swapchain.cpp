@@ -29,6 +29,7 @@
 #include <utility>    // move
 
 #include "grace/physical_device.hpp"
+#include "grace/queue.hpp"
 
 namespace grace {
 
@@ -450,6 +451,18 @@ auto Swapchain::acquire_next_image(VkSemaphore semaphore, VkFence fence) -> VkRe
                                semaphore,
                                fence,
                                &mImageIndex);
+}
+
+auto Swapchain::present_image(VkQueue queue,
+                              const VkSemaphore* wait_semaphores,
+                              const uint32 wait_semaphore_count) -> VkResult
+{
+  const auto present_info = make_present_info(wait_semaphores,
+                                              wait_semaphore_count,
+                                              &mSwapchain,
+                                              1,
+                                              &mImageIndex);
+  return vkQueuePresentKHR(queue, &present_info);
 }
 
 auto Swapchain::get_current_framebuffer() -> VkFramebuffer
