@@ -242,14 +242,6 @@ auto Swapchain::make(VkDevice device,
     return {};
   }
 
-  status = swapchain._recreate_depth_buffer();
-  if (status != VK_SUCCESS) {
-    if (result) {
-      *result = status;
-    }
-
-    return {};
-  }
 
   // Note: framebuffers must be created at a later stage by the user.
 
@@ -305,7 +297,8 @@ auto Swapchain::make(VkSurfaceKHR surface,
   return Swapchain::make(device, allocator, swapchain_info, result);
 }
 
-auto Swapchain::recreate(VkRenderPass render_pass) -> VkResult
+auto Swapchain::recreate(VkRenderPass render_pass, const bool with_depth_buffer)
+    -> VkResult
 {
   VkResult result = VK_SUCCESS;
 
@@ -339,6 +332,13 @@ auto Swapchain::recreate(VkRenderPass render_pass) -> VkResult
   auto new_swapchain = Swapchain::make(mDevice, mAllocator, new_swapchain_info, &result);
   if (result != VK_SUCCESS) {
     return result;
+  }
+
+  if (with_depth_buffer) {
+    result = new_swapchain._recreate_depth_buffer();
+    if (result != VK_SUCCESS) {
+      return result;
+    }
   }
 
   result = new_swapchain._recreate_framebuffers(render_pass);
@@ -482,8 +482,7 @@ auto Swapchain::is_ready() const -> bool
   return mSwapchain != VK_NULL_HANDLE &&  //
          !mImages.empty() &&              //
          !mImageViews.empty() &&          //
-         !mFramebuffers.empty() &&        //
-         mDepthBuffer;
+         !mFramebuffers.empty();
 }
 
 }  // namespace grace

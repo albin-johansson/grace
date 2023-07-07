@@ -109,7 +109,10 @@ auto Framebuffer::make(VkDevice device,
                        VkResult* result) -> Framebuffer
 {
   const VkImageView attachments[] = {color_buffer, depth_buffer};
-  const auto fb_info = make_framebuffer_info(render_pass, extent, attachments, 2);
+  const auto fb_info = make_framebuffer_info(render_pass,
+                                             extent,
+                                             attachments,
+                                             (depth_buffer != VK_NULL_HANDLE) ? 2 : 1);
   return Framebuffer::make(device, fb_info, result);
 }
 

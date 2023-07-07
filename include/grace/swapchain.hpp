@@ -115,7 +115,7 @@ class Swapchain final {
 
   void destroy() noexcept;
 
-  auto recreate(VkRenderPass render_pass) -> VkResult;
+  auto recreate(VkRenderPass render_pass, bool with_depth_buffer = true) -> VkResult;
 
   auto acquire_next_image(VkSemaphore semaphore = VK_NULL_HANDLE,
                           VkFence fence = VK_NULL_HANDLE) -> VkResult;
