@@ -26,7 +26,9 @@
 
 #include <bit>       // bit_cast
 #include <concepts>  // default_initializable, destructible, movable, copyable, ...
+#include <cstring>   // memcpy
 #include <optional>  // optional
+#include <version>   // __cpp_lib_bit_cast
 
 #include <SDL2/SDL.h>
 #include <vk_mem_alloc.h>
@@ -55,7 +57,13 @@ struct TestContext final {
 template <typename Ptr>
 [[nodiscard]] auto make_fake_ptr(const usize value) -> Ptr
 {
+#if __cpp_lib_bit_cast >= 201806L
   return std::bit_cast<Ptr>(value);
+#else
+  Ptr ptr {};
+  std::memcpy(&ptr, &value, sizeof value);
+  return ptr;
+#endif  // __cpp_lib_bit_cast >= 201806L
 }
 
 // clang-format off
