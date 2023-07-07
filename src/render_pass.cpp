@@ -92,6 +92,23 @@ auto make_render_pass_info(const std::vector<VkAttachmentDescription>& attachmen
   };
 }
 
+auto make_render_pass_begin_info(VkRenderPass render_pass,
+                                 VkFramebuffer framebuffer,
+                                 const VkRect2D& render_area,
+                                 const VkClearValue* clear_values,
+                                 const uint32 clear_value_count) -> VkRenderPassBeginInfo
+{
+  return {
+      .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+      .pNext = nullptr,
+      .renderPass = render_pass,
+      .framebuffer = framebuffer,
+      .renderArea = render_area,
+      .clearValueCount = clear_value_count,
+      .pClearValues = clear_values,
+  };
+}
+
 RenderPass::RenderPass(VkDevice device, VkRenderPass render_pass) noexcept
     : mDevice {device},
       mRenderPass {render_pass}
@@ -313,6 +330,7 @@ auto RenderPassBuilder::build(VkResult* result) const -> RenderPass
   assert(!mActiveSubpassIndex.has_value() && "Missing call to end_subpass");
 
   // The subpass descriptions must be stored contiguously, so we use a temporary vector.
+  // TODO store this vector as a member (will make it easier to test the builder)
   std::vector<VkSubpassDescription> subpass_descriptions;
   subpass_descriptions.reserve(mSubpasses.size());
 

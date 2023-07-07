@@ -86,6 +86,13 @@ namespace grace {
     const std::vector<VkSubpassDescription>& subpasses,
     const std::vector<VkSubpassDependency>& dependencies) -> VkRenderPassCreateInfo;
 
+[[nodiscard]] auto make_render_pass_begin_info(VkRenderPass render_pass,
+                                               VkFramebuffer framebuffer,
+                                               const VkRect2D& render_area,
+                                               const VkClearValue* clear_values,
+                                               uint32 clear_value_count)
+    -> VkRenderPassBeginInfo;
+
 class RenderPass final {
  public:
   RenderPass() noexcept = default;
