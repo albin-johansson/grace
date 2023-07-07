@@ -62,6 +62,19 @@ TEST_F(CommandPoolFixture, MakeCommandBufferAllocInfo)
   EXPECT_EQ(info.commandBufferCount, command_buffer_count);
 }
 
+TEST_F(CommandPoolFixture, MakeCommandBufferBeginInfo)
+{
+  const auto* inheritance = make_fake_ptr<const VkCommandBufferInheritanceInfo*>(84);
+  const VkCommandBufferUsageFlags flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+  const auto info = make_command_buffer_begin_info(inheritance, flags);
+
+  EXPECT_EQ(info.sType, VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO);
+  EXPECT_EQ(info.pNext, nullptr);
+  EXPECT_EQ(info.flags, flags);
+  EXPECT_EQ(info.pInheritanceInfo, inheritance);
+}
+
 TEST_F(CommandPoolFixture, Defaults)
 {
   CommandPool command_pool;

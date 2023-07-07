@@ -52,6 +52,18 @@ auto make_command_buffer_alloc_info(VkCommandPool cmd_pool, const uint32 count)
   };
 }
 
+auto make_command_buffer_begin_info(const VkCommandBufferInheritanceInfo* inheritance,
+                                    const VkCommandBufferUsageFlags flags)
+    -> VkCommandBufferBeginInfo
+{
+  return {
+      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+      .pNext = nullptr,
+      .flags = flags,
+      .pInheritanceInfo = inheritance,
+  };
+}
+
 auto alloc_single_submit_command_buffer(VkDevice device,
                                         VkCommandPool cmd_pool,
                                         VkResult* result) -> VkCommandBuffer

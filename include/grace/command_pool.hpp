@@ -43,6 +43,10 @@ using CommandBufferCallback = std::function<void(VkCommandBuffer)>;
 [[nodiscard]] auto make_command_buffer_alloc_info(VkCommandPool cmd_pool, uint32 count)
     -> VkCommandBufferAllocateInfo;
 
+[[nodiscard]] auto make_command_buffer_begin_info(
+    const VkCommandBufferInheritanceInfo* inheritance = nullptr,
+    VkCommandBufferUsageFlags flags = 0) -> VkCommandBufferBeginInfo;
+
 [[nodiscard]] auto alloc_single_submit_command_buffer(VkDevice device,
                                                       VkCommandPool cmd_pool,
                                                       VkResult* result = nullptr)
