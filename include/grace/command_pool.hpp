@@ -61,4 +61,50 @@ auto execute_single_submit_commands(const CommandContext& ctx, VkCommandBuffer c
 auto execute_now(const CommandContext& ctx, const CommandBufferCallback& callback)
     -> VkResult;
 
+class CommandPool final {
+ public:
+  [[nodiscard]] static auto make(VkDevice device,
+                                 const VkCommandPoolCreateInfo& pool_info,
+                                 VkResult* result = nullptr) -> CommandPool;
+
+  [[nodiscard]] static auto make(VkDevice device,
+                                 uint32 queue_family_index,
+                                 VkCommandPoolCreateFlags flags = 0,
+                                 VkResult* result = nullptr) -> CommandPool;
+
+  CommandPool() noexcept = default;
+
+  CommandPool(VkDevice device, VkCommandPool command_pool) noexcept;
+
+  CommandPool(CommandPool&& other) noexcept;
+  CommandPool(const CommandPool& other) = delete;
+
+  auto operator=(CommandPool&& other) noexcept -> CommandPool&;
+  auto operator=(const CommandPool& other) -> CommandPool& = delete;
+
+  ~CommandPool() noexcept;
+
+  void destroy() noexcept;
+
+  auto execute_now(VkQueue queue, const CommandBufferCallback& callback) -> VkResult;
+
+  [[nodiscard]] auto alloc_single_submit_command_buffer(VkResult* result = nullptr)
+      -> VkCommandBuffer;
+
+  [[nodiscard]] auto get() noexcept -> VkCommandPool { return mCommandPool; }
+
+  [[nodiscard]] auto device() noexcept -> VkDevice { return mDevice; }
+
+  [[nodiscard]] operator VkCommandPool() noexcept { return mCommandPool; }
+
+  [[nodiscard]] explicit operator bool() const noexcept
+  {
+    return mCommandPool != VK_NULL_HANDLE;
+  }
+
+ private:
+  VkDevice mDevice {VK_NULL_HANDLE};
+  VkCommandPool mCommandPool {VK_NULL_HANDLE};
+};
+
 }  // namespace grace

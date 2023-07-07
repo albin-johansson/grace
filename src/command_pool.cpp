@@ -106,4 +106,88 @@ auto execute_now(const CommandContext& ctx, const CommandBufferCallback& callbac
   return result;
 }
 
+CommandPool::CommandPool(VkDevice device, VkCommandPool command_pool) noexcept
+    : mDevice {device},
+      mCommandPool {command_pool}
+{
+}
+
+CommandPool::CommandPool(CommandPool&& other) noexcept
+    : mDevice {other.mDevice},
+      mCommandPool {other.mCommandPool}
+{
+  other.mDevice = VK_NULL_HANDLE;
+  other.mCommandPool = VK_NULL_HANDLE;
+}
+
+auto CommandPool::operator=(CommandPool&& other) noexcept -> CommandPool&
+{
+  if (this != &other) {
+    destroy();
+
+    mDevice = other.mDevice;
+    mCommandPool = other.mCommandPool;
+
+    other.mDevice = VK_NULL_HANDLE;
+    other.mCommandPool = VK_NULL_HANDLE;
+  }
+
+  return *this;
+}
+
+CommandPool::~CommandPool() noexcept
+{
+  destroy();
+}
+
+void CommandPool::destroy() noexcept
+{
+  if (mCommandPool != VK_NULL_HANDLE) {
+    vkDestroyCommandPool(mDevice, mCommandPool, nullptr);
+    mCommandPool = VK_NULL_HANDLE;
+  }
+}
+
+auto CommandPool::execute_now(VkQueue queue, const CommandBufferCallback& callback)
+    -> VkResult
+{
+  CommandContext ctx;
+  ctx.device = mDevice;
+  ctx.cmd_pool = mCommandPool;
+  ctx.queue = queue;
+  return grace::execute_now(ctx, callback);
+}
+
+auto CommandPool::alloc_single_submit_command_buffer(VkResult* result) -> VkCommandBuffer
+{
+  return grace::alloc_single_submit_command_buffer(mDevice, mCommandPool, result);
+}
+
+auto CommandPool::make(VkDevice device,
+                       const VkCommandPoolCreateInfo& pool_info,
+                       VkResult* result) -> CommandPool
+{
+  VkCommandPool command_pool = VK_NULL_HANDLE;
+  const auto status = vkCreateCommandPool(device, &pool_info, nullptr, &command_pool);
+
+  if (result) {
+    *result = status;
+  }
+
+  if (status == VK_SUCCESS) {
+    return CommandPool {device, command_pool};
+  }
+
+  return {};
+}
+
+auto CommandPool::make(VkDevice device,
+                       const uint32 queue_family_index,
+                       const VkCommandPoolCreateFlags flags,
+                       VkResult* result) -> CommandPool
+{
+  const auto pool_info = make_command_pool_info(queue_family_index, flags);
+  return CommandPool::make(device, pool_info, result);
+}
+
 }  // namespace grace

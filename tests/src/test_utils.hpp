@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include <bit>       // bit_cast
 #include <concepts>  // default_initializable, destructible, movable, copyable, ...
 #include <optional>  // optional
 
@@ -32,6 +33,7 @@
 #include <vulkan/vulkan.h>
 
 #include "grace/allocator.hpp"
+#include "grace/common.hpp"
 #include "grace/device.hpp"
 #include "grace/extras/window.hpp"
 #include "grace/instance.hpp"
@@ -49,6 +51,12 @@ struct TestContext final {
 };
 
 [[nodiscard]] auto make_test_context() -> TestContext;
+
+template <typename Ptr>
+[[nodiscard]] auto make_fake_ptr(const usize value) -> Ptr
+{
+  return std::bit_cast<Ptr>(value);
+}
 
 // clang-format off
 

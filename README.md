@@ -111,7 +111,10 @@ int main(int argc, char* argv[])
                                       VK_FILTER_LINEAR,
                                       VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 
-  // TODO command pool
+  // Create command pool
+  const auto queue_family_indices = grace::get_queue_family_indices(gpu, surface);
+  auto command_pool = grace::CommandPool::make(device, queue_family_indices.graphics.value());
+
   // TODO command buffer
 }
 ```

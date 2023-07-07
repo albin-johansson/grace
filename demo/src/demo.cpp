@@ -341,7 +341,20 @@ int main(int, char**)
     std::cout << "Successfully created pipeline\n";
   }
 
-  // TODO command pool
+  VkResult command_pool_result = VK_ERROR_UNKNOWN;
+  auto command_pool = grace::CommandPool::make(device,
+                                               queue_family_indices.graphics.value(),
+                                               0,
+                                               &command_pool_result);
+  if (!command_pool) {
+    std::cerr << "Could not create command pool: "
+              << grace::to_string(command_pool_result) << '\n';
+    return EXIT_FAILURE;
+  }
+  else {
+    std::cout << "Successfully created command pool\n";
+  }
+
   // TODO command buffer
 
   SDL_ShowWindow(window);
