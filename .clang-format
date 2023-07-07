@@ -49,7 +49,7 @@ BreakBeforeBinaryOperators: None
 BreakBeforeTernaryOperators: true
 BreakBeforeConceptDeclarations: Always
 
-RequiresClausePosition: WithPreceding
+RequiresClausePosition: WithFollowing
 IndentRequiresClause: true
 RequiresExpressionIndentation: OuterScope
 
