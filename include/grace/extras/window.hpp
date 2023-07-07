@@ -29,6 +29,7 @@
 #include <memory>  // unique_ptr
 
 #include <SDL2/SDL.h>
+#include <vulkan/vulkan.h>
 
 namespace grace {
 
@@ -38,11 +39,19 @@ struct WindowDeleter final {
 
 class Window final {
  public:
+  [[nodiscard]] static auto make(const char* title, int width, int height) -> Window;
+
   Window() noexcept = default;
 
   explicit Window(SDL_Window* window) noexcept;
 
-  [[nodiscard]] static auto make(const char* title, int width, int height) -> Window;
+  void show();
+
+  void hide();
+
+  [[nodiscard]] auto get_size_in_pixels() const -> VkExtent2D;
+
+  [[nodiscard]] auto get_size() const -> VkExtent2D;
 
   [[nodiscard]] auto get() noexcept -> SDL_Window* { return mWindow.get(); }
 

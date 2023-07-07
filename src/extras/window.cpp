@@ -26,6 +26,8 @@
 
 #ifdef GRACE_USE_SDL2
 
+#include "grace/common.hpp"
+
 namespace grace {
 
 void WindowDeleter::operator()(SDL_Window* window) noexcept
@@ -36,6 +38,32 @@ void WindowDeleter::operator()(SDL_Window* window) noexcept
 Window::Window(SDL_Window* window) noexcept
     : mWindow {window}
 {
+}
+
+void Window::show()
+{
+  SDL_ShowWindow(mWindow.get());
+}
+
+void Window::hide()
+{
+  SDL_HideWindow(mWindow.get());
+}
+
+auto Window::get_size_in_pixels() const -> VkExtent2D
+{
+  int width = 0;
+  int height = 0;
+  SDL_GetWindowSizeInPixels(mWindow.get(), &width, &height);
+  return {static_cast<uint32>(width), static_cast<uint32>(height)};
+}
+
+auto Window::get_size() const -> VkExtent2D
+{
+  int width = 0;
+  int height = 0;
+  SDL_GetWindowSize(mWindow.get(), &width, &height);
+  return {static_cast<uint32>(width), static_cast<uint32>(height)};
 }
 
 auto Window::make(const char* title, const int width, const int height) -> Window
