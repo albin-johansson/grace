@@ -50,10 +50,11 @@ jobs:
       - name: Build
         run: ninja -C build
 
-      - name: Run tests
-        if: ${{ matrix.USE_SDL2 == 'ON' }}
-        working-directory: ./build/tests
-        run: ./grace-tests
+      # FIXME: the VK_KHR_surface extension is not available on the runner
+      # - name: Run tests
+      #   if: ${{ matrix.USE_SDL2 == 'ON' }}
+      #   working-directory: ./build/tests
+      #   run: ./grace-tests
 
   ubuntu-latest-ci:
     runs-on: ubuntu-latest
@@ -125,10 +126,11 @@ jobs:
       - name: Build
         run: ninja -C build
 
-      - name: Run tests
-        if: ${{ matrix.USE_SDL2 == 'ON' }}
-        working-directory: ./build/tests
-        run: ./grace-tests
+      # FIXME: SDL2 complains that wayland isn't available
+      # - name: Run tests
+      #   if: ${{ matrix.USE_SDL2 == 'ON' }}
+      #   working-directory: ./build/tests
+      #   run: ./grace-tests
 
   windows-latest-ci:
     runs-on: windows-latest
