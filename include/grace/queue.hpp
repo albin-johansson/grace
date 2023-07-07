@@ -30,10 +30,20 @@
 
 namespace grace {
 
-[[nodiscard]] auto make_submit_info(VkCommandBuffer cmd_buffer,
-                                    VkSemaphore wait_sem = VK_NULL_HANDLE,
-                                    VkPipelineStageFlags wait_dst_stage_mask = 0,
-                                    VkSemaphore signal_sem = VK_NULL_HANDLE)
-    -> VkSubmitInfo;
+[[nodiscard]] auto make_submit_info(
+    const VkCommandBuffer* cmd_buffers,
+    uint32 cmd_buffer_count,
+    const VkSemaphore* wait_semaphores = nullptr,
+    uint32 wait_semaphore_count = 0,
+    const VkPipelineStageFlags* wait_dst_stage_mask = nullptr,
+    const VkSemaphore* signal_semaphores = nullptr,
+    uint32 signal_semaphore_count = 0) -> VkSubmitInfo;
+
+[[nodiscard]] auto make_present_info(const VkSemaphore* wait_semaphores = nullptr,
+                                     uint32 wait_semaphore_count = 0,
+                                     const VkSwapchainKHR* swapchains = nullptr,
+                                     uint32 swapchain_count = 0,
+                                     const uint32* swapchain_image_indices = nullptr)
+    -> VkPresentInfoKHR;
 
 }  // namespace grace

@@ -26,31 +26,44 @@
 
 namespace grace {
 
-auto make_submit_info(VkCommandBuffer cmd_buffer,
-                      VkSemaphore wait_sem,
-                      const VkPipelineStageFlags wait_dst_stage_mask,
-                      VkSemaphore signal_sem) -> VkSubmitInfo
+auto make_submit_info(const VkCommandBuffer* cmd_buffers,
+                      const uint32 cmd_buffer_count,
+                      const VkSemaphore* wait_semaphores,
+                      const uint32 wait_semaphore_count,
+                      const VkPipelineStageFlags* wait_dst_stage_mask,
+                      const VkSemaphore* signal_semaphores,
+                      const uint32 signal_semaphore_count) -> VkSubmitInfo
 {
   VkSubmitInfo submit_info = {};
 
-  const uint32 wait_sem_count = (wait_sem != VK_NULL_HANDLE) ? 1 : 0;
-  const uint32 signal_sem_count = (signal_sem != VK_NULL_HANDLE) ? 1 : 0;
-  const auto* wait_dst_stage_mask_ptr =
-      (wait_dst_stage_mask != 0) ? &wait_dst_stage_mask : nullptr;
-
   submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-  submit_info.waitSemaphoreCount = wait_sem_count;
-  submit_info.pWaitSemaphores = &wait_sem;
-  submit_info.pWaitDstStageMask = wait_dst_stage_mask_ptr;
-
-  submit_info.commandBufferCount = 1;
-  submit_info.pCommandBuffers = &cmd_buffer;
-
-  submit_info.signalSemaphoreCount = signal_sem_count;
-  submit_info.pSignalSemaphores = &signal_sem;
+  submit_info.waitSemaphoreCount = wait_semaphore_count;
+  submit_info.pWaitSemaphores = wait_semaphores;
+  submit_info.pWaitDstStageMask = wait_dst_stage_mask;
+  submit_info.commandBufferCount = cmd_buffer_count;
+  submit_info.pCommandBuffers = cmd_buffers;
+  submit_info.signalSemaphoreCount = signal_semaphore_count;
+  submit_info.pSignalSemaphores = signal_semaphores;
 
   return submit_info;
+}
+
+auto make_present_info(const VkSemaphore* wait_semaphores,
+                       const uint32 wait_semaphore_count,
+                       const VkSwapchainKHR* swapchains,
+                       const uint32 swapchain_count,
+                       const uint32* swapchain_image_indices) -> VkPresentInfoKHR
+{
+  return {
+      .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+      .pNext = nullptr,
+      .waitSemaphoreCount = wait_semaphore_count,
+      .pWaitSemaphores = wait_semaphores,
+      .swapchainCount = swapchain_count,
+      .pSwapchains = swapchains,
+      .pImageIndices = swapchain_image_indices,
+      .pResults = nullptr,
+  };
 }
 
 }  // namespace grace

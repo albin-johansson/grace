@@ -68,6 +68,40 @@ auto alloc_single_submit_command_buffer(VkDevice device,
   return cmd_buffer;
 }
 
+auto alloc_command_buffer(VkDevice device, VkCommandPool cmd_pool, VkResult* result)
+    -> VkCommandBuffer
+{
+  const auto alloc_info = make_command_buffer_alloc_info(cmd_pool, 1);
+
+  VkCommandBuffer cmd_buffer = VK_NULL_HANDLE;
+  const auto status = vkAllocateCommandBuffers(device, &alloc_info, &cmd_buffer);
+
+  if (result) {
+    *result = status;
+  }
+
+  return cmd_buffer;
+}
+
+auto alloc_command_buffers(VkDevice device,
+                           VkCommandPool cmd_pool,
+                           const uint32 count,
+                           VkResult* result) -> std::vector<VkCommandBuffer>
+{
+  const auto alloc_info = make_command_buffer_alloc_info(cmd_pool, count);
+
+  std::vector<VkCommandBuffer> cmd_buffers;
+  cmd_buffers.resize(static_cast<usize>(count));
+
+  const auto status = vkAllocateCommandBuffers(device, &alloc_info, cmd_buffers.data());
+
+  if (result) {
+    *result = status;
+  }
+
+  return cmd_buffers;
+}
+
 auto execute_single_submit_commands(const CommandContext& ctx, VkCommandBuffer cmd_buffer)
     -> VkResult
 {
@@ -76,7 +110,7 @@ auto execute_single_submit_commands(const CommandContext& ctx, VkCommandBuffer c
     return result;
   }
 
-  const auto submit_info = make_submit_info(cmd_buffer);
+  const auto submit_info = make_submit_info(&cmd_buffer, 1);
   result = vkQueueSubmit(ctx.queue, 1, &submit_info, VK_NULL_HANDLE);
   if (result != VK_SUCCESS) {
     return result;

@@ -315,11 +315,6 @@ auto Swapchain::recreate(VkRenderPass render_pass) -> VkResult
     return result;
   }
 
-  // Destroy existing resources in the right order
-  //  mFramebuffers.clear();
-  //  mImageViews.clear();
-  //  mDepthBuffer.destroy();
-
   const VkSwapchainCreateInfoKHR new_swapchain_info = {
       .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
       .pNext = nullptr,
@@ -466,6 +461,11 @@ auto Swapchain::get_current_framebuffer() -> VkFramebuffer
   }
 
   return VK_NULL_HANDLE;
+}
+
+auto Swapchain::get_current_image_index() -> uint32
+{
+  return mImageIndex;
 }
 
 auto Swapchain::get_depth_buffer_format() const -> VkFormat

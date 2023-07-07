@@ -25,6 +25,7 @@
 #pragma once
 
 #include <functional>  // function
+#include <vector>      // vector
 
 #include <vulkan/vulkan.h>
 
@@ -46,6 +47,16 @@ using CommandBufferCallback = std::function<void(VkCommandBuffer)>;
                                                       VkCommandPool cmd_pool,
                                                       VkResult* result = nullptr)
     -> VkCommandBuffer;
+
+[[nodiscard]] auto alloc_command_buffer(VkDevice device,
+                                        VkCommandPool cmd_pool,
+                                        VkResult* result = nullptr) -> VkCommandBuffer;
+
+[[nodiscard]] auto alloc_command_buffers(VkDevice device,
+                                         VkCommandPool cmd_pool,
+                                         uint32 count,
+                                         VkResult* result = nullptr)
+    -> std::vector<VkCommandBuffer>;
 
 auto execute_single_submit_commands(const CommandContext& ctx, VkCommandBuffer cmd_buffer)
     -> VkResult;
