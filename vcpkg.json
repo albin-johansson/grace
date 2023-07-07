@@ -13,7 +13,7 @@
       "name": "sdl2",
       "features": [
         "vulkan",
-        "x11"
+        "wayland"
       ],
       "platform": "linux"
     },
