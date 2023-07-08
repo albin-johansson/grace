@@ -13,5 +13,5 @@ layout (location = 0) out vec4 oFragColor;
 
 void main()
 {
-    oFragColor = vec4(1, 0, 0, 1);
+    oFragColor = vec4(0.21f, 0.36f, 0.78f, 1);
 }
