@@ -355,7 +355,7 @@ TEST_F(PipelineFixture, GraphicsPipelineBuilderMinimalPipeline)
       RenderPassBuilder {mDevice}
           .color_attachment(VK_FORMAT_B8G8R8A8_UNORM)
           .begin_subpass()
-          .set_color_attachment(0)
+          .use_color_attachment(0)
           .end_subpass()
           .subpass_dependency(VK_SUBPASS_EXTERNAL,
                               0,

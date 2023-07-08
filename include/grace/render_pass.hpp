@@ -256,7 +256,7 @@ class RenderPassBuilder final {
    *
    * \return the render pass builder itself.
    */
-  auto set_color_attachment(uint32 attachment) -> Self&;
+  auto use_color_attachment(uint32 attachment) -> Self&;
 
   /**
    * Marks the attachment at the specified index as an input attachment in the subpass.
@@ -267,7 +267,7 @@ class RenderPassBuilder final {
    *
    * \return the render pass builder itself.
    */
-  auto set_input_attachment(uint32 attachment) -> Self&;
+  auto use_input_attachment(uint32 attachment) -> Self&;
 
   /**
    * Marks the attachment at the specified index as a depth attachment in the subpass.
@@ -279,7 +279,7 @@ class RenderPassBuilder final {
    *
    * \return the render pass builder itself.
    */
-  auto set_depth_attachment(uint32 attachment) -> Self&;
+  auto use_depth_attachment(uint32 attachment) -> Self&;
 
   /**
    * Marks the end of the current subpass.
@@ -299,12 +299,19 @@ class RenderPassBuilder final {
    */
   [[nodiscard]] auto build(VkResult* result = nullptr) const -> RenderPass;
 
+  [[nodiscard]] auto get_subpass_descriptions() const
+      -> std::vector<VkSubpassDescription>;
+
+  [[nodiscard]] auto get_render_pass_info(
+      const std::vector<VkSubpassDescription>& subpass_descriptions) const
+      -> VkRenderPassCreateInfo;
+
  private:
   struct SubpassInfo final {
     std::vector<VkAttachmentReference> color_attachments;
     std::vector<VkAttachmentReference> input_attachments;
     VkAttachmentReference depth_attachment {};
-    VkSubpassDescription description {};
+    VkPipelineBindPoint pipeline_bind_point {VK_PIPELINE_BIND_POINT_GRAPHICS};
     bool has_depth_attachment {false};
   };
 
@@ -313,7 +320,6 @@ class RenderPassBuilder final {
   std::vector<VkSubpassDependency> mSubpassDependencies;
   std::vector<SubpassInfo> mSubpasses;
   std::optional<usize> mActiveSubpassIndex;
-  std::optional<uint32> mDepthAttachmentIndex;
 };
 
 }  // namespace grace

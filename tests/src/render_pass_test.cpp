@@ -164,4 +164,54 @@ TEST_F(RenderPassFixture, RenderPassBuilderMinimalRenderPass)
   EXPECT_EQ(static_cast<VkRenderPass>(render_pass), VK_NULL_HANDLE);
 }
 
-// TODO more detailed RenderPassBuilder test
+TEST_F(RenderPassFixture, RenderPassBuilderAdvancedRenderPass)
+{
+  const auto subpass_stages = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+                              VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+  const auto main_subpass_access =
+      VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+  const auto dependency = make_subpass_dependency(VK_SUBPASS_EXTERNAL,
+                                                  0,
+                                                  subpass_stages,
+                                                  subpass_stages,
+                                                  0,
+                                                  main_subpass_access);
+
+  RenderPassBuilder builder {mDevice};
+
+  // clang-format off
+  VkResult result = VK_ERROR_UNKNOWN;
+  auto render_pass = builder
+                         .color_attachment(VK_FORMAT_B8G8R8A8_UNORM)      // 0
+                         .color_attachment(VK_FORMAT_B8G8R8A8_UNORM)      // 1
+                         .color_attachment(VK_FORMAT_B8G8R8A8_UNORM)      // 2
+                         .depth_attachment(VK_FORMAT_D32_SFLOAT_S8_UINT)  // 3
+                         .begin_subpass()
+                           .use_color_attachment(0)
+                           .use_color_attachment(1)
+                           .use_depth_attachment(3)
+                         .end_subpass()
+                         .begin_subpass()
+                           .use_color_attachment(2)
+                           .use_depth_attachment(3)
+                         .end_subpass()
+                         .subpass_dependency(dependency)
+                         .build(&result);
+  // clang-format on
+
+  ASSERT_EQ(result, VK_SUCCESS);
+  EXPECT_TRUE(render_pass);
+
+  const auto subpass_descriptions = builder.get_subpass_descriptions();
+  const auto render_pass_info = builder.get_render_pass_info(subpass_descriptions);
+
+  EXPECT_EQ(render_pass_info.sType, VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO);
+  EXPECT_EQ(render_pass_info.pNext, nullptr);
+  EXPECT_EQ(render_pass_info.flags, 0);
+  EXPECT_EQ(render_pass_info.subpassCount, 2);
+  EXPECT_EQ(render_pass_info.attachmentCount, 4);
+  EXPECT_EQ(render_pass_info.dependencyCount, 1);
+  EXPECT_EQ(render_pass_info.pSubpasses, subpass_descriptions.data());
+  EXPECT_NE(render_pass_info.pAttachments, nullptr);
+  EXPECT_NE(render_pass_info.pDependencies, nullptr);
+}

@@ -192,7 +192,6 @@ auto RenderPassBuilder::reset() -> Self&
   mSubpassDependencies.clear();
   mSubpasses.clear();
   mActiveSubpassIndex.reset();
-  mDepthAttachmentIndex.reset();
 
   return *this;
 }
@@ -255,14 +254,14 @@ auto RenderPassBuilder::begin_subpass(const VkPipelineBindPoint bind_point) -> S
   assert(!mActiveSubpassIndex.has_value() && "Previous subpass was not ended");
 
   auto& subpass = mSubpasses.emplace_back();
-  subpass.description.pipelineBindPoint = bind_point;
+  subpass.pipeline_bind_point = bind_point;
 
   mActiveSubpassIndex = mSubpasses.size() - 1;
 
   return *this;
 }
 
-auto RenderPassBuilder::set_color_attachment(const uint32 attachment) -> Self&
+auto RenderPassBuilder::use_color_attachment(const uint32 attachment) -> Self&
 {
   assert(mActiveSubpassIndex.has_value() && "Missing call to begin_subpass");
 
@@ -273,7 +272,7 @@ auto RenderPassBuilder::set_color_attachment(const uint32 attachment) -> Self&
   return *this;
 }
 
-auto RenderPassBuilder::set_input_attachment(const uint32 attachment) -> Self&
+auto RenderPassBuilder::use_input_attachment(const uint32 attachment) -> Self&
 {
   assert(mActiveSubpassIndex.has_value() && "Missing call to begin_subpass");
 
@@ -284,19 +283,15 @@ auto RenderPassBuilder::set_input_attachment(const uint32 attachment) -> Self&
   return *this;
 }
 
-auto RenderPassBuilder::set_depth_attachment(const uint32 attachment) -> Self&
+auto RenderPassBuilder::use_depth_attachment(const uint32 attachment) -> Self&
 {
   assert(mActiveSubpassIndex.has_value() && "Missing call to begin_subpass");
-  assert(!mDepthAttachmentIndex.has_value() &&
-         "Depth attachment can only be assigned once");
 
   auto& subpass = mSubpasses.at(mActiveSubpassIndex.value());
   subpass.depth_attachment =
       make_attachment_reference(attachment,
                                 VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
   subpass.has_depth_attachment = true;
-
-  mDepthAttachmentIndex = attachment;
 
   return *this;
 }
@@ -305,20 +300,6 @@ auto RenderPassBuilder::end_subpass() -> Self&
 {
   assert(mActiveSubpassIndex.has_value() &&
          "end_subpass must be called after begin_subpass");
-
-  auto& subpass = mSubpasses.at(mActiveSubpassIndex.value());
-
-  subpass.description.flags = 0;
-  subpass.description.inputAttachmentCount = u32_size(subpass.input_attachments);
-  subpass.description.pInputAttachments = data_or_null(subpass.input_attachments);
-  subpass.description.colorAttachmentCount = u32_size(subpass.color_attachments);
-  subpass.description.pColorAttachments = data_or_null(subpass.color_attachments);
-  subpass.description.pResolveAttachments = nullptr;
-  subpass.description.pDepthStencilAttachment =
-      subpass.has_depth_attachment ? &subpass.depth_attachment : nullptr;
-  subpass.description.preserveAttachmentCount = 0;
-  subpass.description.pPreserveAttachments = nullptr;
-
   mActiveSubpassIndex.reset();
 
   return *this;
@@ -329,20 +310,42 @@ auto RenderPassBuilder::build(VkResult* result) const -> RenderPass
   assert(mDevice != VK_NULL_HANDLE);
   assert(!mActiveSubpassIndex.has_value() && "Missing call to end_subpass");
 
-  // The subpass descriptions must be stored contiguously, so we use a temporary vector.
-  // TODO store this vector as a member (will make it easier to test the builder)
+  const auto subpass_descriptions = get_subpass_descriptions();
+  const auto render_pass_info = get_render_pass_info(subpass_descriptions);
+
+  return RenderPass::make(mDevice, render_pass_info, result);
+}
+
+auto RenderPassBuilder::get_subpass_descriptions() const
+    -> std::vector<VkSubpassDescription>
+{
   std::vector<VkSubpassDescription> subpass_descriptions;
   subpass_descriptions.reserve(mSubpasses.size());
 
-  for (const auto& subpass_info : mSubpasses) {
-    subpass_descriptions.push_back(subpass_info.description);
+  for (const auto& subpass : mSubpasses) {
+    auto& subpass_desc = subpass_descriptions.emplace_back();
+    subpass_desc.flags = 0;
+    subpass_desc.pipelineBindPoint = subpass.pipeline_bind_point;
+    subpass_desc.inputAttachmentCount = u32_size(subpass.input_attachments);
+    subpass_desc.pInputAttachments = data_or_null(subpass.input_attachments);
+    subpass_desc.colorAttachmentCount = u32_size(subpass.color_attachments);
+    subpass_desc.pColorAttachments = data_or_null(subpass.color_attachments);
+    subpass_desc.pResolveAttachments = nullptr;
+    subpass_desc.preserveAttachmentCount = 0;
+    subpass_desc.pPreserveAttachments = nullptr;
+    subpass_desc.pDepthStencilAttachment = subpass.has_depth_attachment
+                                               ? &subpass.depth_attachment  //
+                                               : nullptr;
   }
 
-  return RenderPass::make(mDevice,
-                          mAttachments,
-                          subpass_descriptions,
-                          mSubpassDependencies,
-                          result);
+  return subpass_descriptions;
+}
+
+auto RenderPassBuilder::get_render_pass_info(
+    const std::vector<VkSubpassDescription>& subpass_descriptions) const
+    -> VkRenderPassCreateInfo
+{
+  return make_render_pass_info(mAttachments, subpass_descriptions, mSubpassDependencies);
 }
 
 }  // namespace grace
