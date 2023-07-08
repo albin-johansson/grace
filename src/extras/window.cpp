@@ -66,9 +66,11 @@ auto Window::get_size() const -> VkExtent2D
   return {static_cast<uint32>(width), static_cast<uint32>(height)};
 }
 
-auto Window::make(const char* title, const int width, const int height) -> Window
+auto Window::make(const char* title,
+                  const int width,
+                  const int height,
+                  const uint32 flags) -> Window
 {
-  const auto flags = SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_VULKAN;
   return Window {SDL_CreateWindow(title,
                                   SDL_WINDOWPOS_UNDEFINED,
                                   SDL_WINDOWPOS_UNDEFINED,

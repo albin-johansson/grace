@@ -31,6 +31,8 @@
 #include <SDL2/SDL.h>
 #include <vulkan/vulkan.h>
 
+#include "../common.hpp"
+
 namespace grace {
 
 struct WindowDeleter final {
@@ -39,7 +41,12 @@ struct WindowDeleter final {
 
 class Window final {
  public:
-  [[nodiscard]] static auto make(const char* title, int width, int height) -> Window;
+  [[nodiscard]] static auto make(const char* title,
+                                 int width,
+                                 int height,
+                                 uint32 flags = SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE |
+                                                SDL_WINDOW_ALLOW_HIGHDPI |
+                                                SDL_WINDOW_VULKAN) -> Window;
 
   Window() noexcept = default;
 
