@@ -414,8 +414,7 @@ class GraceApplication final {
       throw std::runtime_error {"Could not create render pass"};
     }
 
-    if (const auto result = mSwapchain.recreate(mRenderPass, false);
-        result != VK_SUCCESS) {
+    if (const auto result = _recreate_swapchain(); result != VK_SUCCESS) {
       std::cerr << "Could not recreate swapchain: " << grace::to_string(result) << '\n';
       throw std::runtime_error {"Could not prepare swapchain"};
     }
@@ -489,7 +488,6 @@ class GraceApplication final {
         break;
       }
 
-      // TODO implement window resize handling
       // TODO add depth attachment and enable depth testing
 
       auto& frame = mFrames.at(mCurrentFrameIndex);
@@ -497,28 +495,15 @@ class GraceApplication final {
       // Wait until the GPU has finished executing previously submitted commands
       frame.in_flight_fence.wait();
 
-      if (!begin_frame()) {
-        continue;
+      if (_begin_frame()) {
+        frame.in_flight_fence.reset();
+
+        _record_commands();
+        _submit_commands();
+        _present_image();
+
+        mCurrentFrameIndex = (mCurrentFrameIndex + 1) % kMaxFramesInFlight;
       }
-
-      frame.in_flight_fence.reset();
-      record_commands();
-
-      const auto submit_result = submit_commands();
-      if (submit_result != VK_SUCCESS) {
-        std::cerr << "Failed to submit commands to graphics queue: "
-                  << grace::to_string(submit_result) << '\n';
-      }
-
-      const VkSemaphore present_wait_semaphores[] = {frame.render_finished_semaphore};
-      const auto present_result =
-          mSwapchain.present_image(mPresentQueue, present_wait_semaphores, 1);
-      if (present_result != VK_SUCCESS) {
-        std::cerr << "Failed to present swapchain image: "
-                  << grace::to_string(present_result) << '\n';
-      }
-
-      mCurrentFrameIndex = (mCurrentFrameIndex + 1) % kMaxFramesInFlight;
     }
 
     // Wait for the GPU to finish working so that we don't destroy any active resources.
@@ -549,8 +534,9 @@ class GraceApplication final {
   grace::CommandPool mCommandPool;
   std::vector<FrameData> mFrames;
   usize mCurrentFrameIndex {0};
+  bool mUseDepthBuffer {false};
 
-  [[nodiscard]] auto begin_frame() -> bool
+  [[nodiscard]] auto _begin_frame() -> bool
   {
     auto& frame = mFrames.at(mCurrentFrameIndex);
 
@@ -559,9 +545,9 @@ class GraceApplication final {
         mSwapchain.acquire_next_image(frame.image_available_semaphore);
 
     if (acquire_result == VK_ERROR_OUT_OF_DATE_KHR) {
-      std::cout << "Recreating outdated swapchain\n";
+      std::cout << "Recreating outdated swapchain after image acquisition failed\n";
 
-      const auto recreate_result = mSwapchain.recreate(mRenderPass, false);
+      const auto recreate_result = _recreate_swapchain();
       if (recreate_result != VK_SUCCESS) {
         std::cerr << "Failed to recreate swapchain: " << grace::to_string(recreate_result)
                   << '\n';
@@ -578,7 +564,24 @@ class GraceApplication final {
     return true;
   }
 
-  void record_commands()
+  auto _recreate_swapchain() -> VkResult
+  {
+    auto window_size = mWindow.get_size_in_pixels();
+    while (window_size.width == 0 || window_size.height == 0) {
+      SDL_WaitEvent(nullptr);
+      window_size = mWindow.get_size_in_pixels();
+    }
+
+    auto& swapchain_info = mSwapchain.info();
+    swapchain_info.image_extent = window_size;
+
+    std::cout << "New swapchain image extent: " << window_size.width << " x "
+              << window_size.height << '\n';
+
+    return mSwapchain.recreate(mRenderPass, mUseDepthBuffer);
+  }
+
+  void _record_commands()
   {
     auto& frame = mFrames.at(mCurrentFrameIndex);
     vkResetCommandBuffer(frame.command_buffer, 0);
@@ -590,11 +593,11 @@ class GraceApplication final {
     clear_values[0].color = VkClearColorValue {0.0f, 0.0f, 0.0f, 1.0f};
     // TODO clear_values[0].depthStencil = VkClearDepthStencilValue {1.0f, 0};
 
-    const auto window_extent = mWindow.get_size_in_pixels();
+    const auto image_extent = mSwapchain.info().image_extent;
     const auto render_pass_begin_info =
         grace::make_render_pass_begin_info(mRenderPass,
                                            mSwapchain.get_current_framebuffer(),
-                                           {VkOffset2D {0, 0}, window_extent},
+                                           {VkOffset2D {0, 0}, image_extent},
                                            clear_values.data(),
                                            grace::u32_size(clear_values));
     vkCmdBeginRenderPass(frame.command_buffer,
@@ -602,11 +605,11 @@ class GraceApplication final {
                          VK_SUBPASS_CONTENTS_INLINE);
 
     const auto viewport =
-        grace::make_viewport(0, 0, window_extent.width, window_extent.height);
+        grace::make_viewport(0, 0, image_extent.width, image_extent.height);
     vkCmdSetViewport(frame.command_buffer, 0, 1, &viewport);
 
     const auto scissor =
-        grace::make_rect_2d(0, 0, window_extent.width, window_extent.height);
+        grace::make_rect_2d(0, 0, image_extent.width, image_extent.height);
     vkCmdSetScissor(frame.command_buffer, 0, 1, &scissor);
 
     vkCmdBindPipeline(frame.command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline);
@@ -617,7 +620,7 @@ class GraceApplication final {
     vkEndCommandBuffer(frame.command_buffer);
   }
 
-  auto submit_commands() -> VkResult
+  void _submit_commands()
   {
     auto& frame = mFrames.at(mCurrentFrameIndex);
 
@@ -637,7 +640,31 @@ class GraceApplication final {
                                                      submit_signal_semaphores,
                                                      1);
 
-    return vkQueueSubmit(mGraphicsQueue, 1, &submit_info, frame.in_flight_fence);
+    const auto submit_result =
+        vkQueueSubmit(mGraphicsQueue, 1, &submit_info, frame.in_flight_fence);
+    if (submit_result != VK_SUCCESS) {
+      std::cerr << "Failed to submit commands to graphics queue: "
+                << grace::to_string(submit_result) << '\n';
+    }
+  }
+
+  void _present_image()
+  {
+    auto& frame = mFrames.at(mCurrentFrameIndex);
+
+    const VkSemaphore present_wait_semaphores[] = {frame.render_finished_semaphore};
+    const auto present_result =
+        mSwapchain.present_image(mPresentQueue, present_wait_semaphores, 1);
+
+    if (present_result == VK_ERROR_OUT_OF_DATE_KHR ||
+        present_result == VK_SUBOPTIMAL_KHR) {
+      std::cout << "Recreating outdated or suboptimal swapchain\n";
+      _recreate_swapchain();
+    }
+    else if (present_result != VK_SUCCESS) {
+      std::cerr << "Failed to present swapchain image: "
+                << grace::to_string(present_result) << '\n';
+    }
   }
 };
 
