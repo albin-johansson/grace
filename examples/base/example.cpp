@@ -103,6 +103,12 @@ Example::Example(const char* name)
     throw std::runtime_error {"Could not create instance"};
   }
 
+  vkCmdPushDescriptorSetKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetKHR>(
+      vkGetInstanceProcAddr(mInstance, "vkCmdPushDescriptorSetKHR"));
+  if (!vkCmdPushDescriptorSetKHR) {
+    throw std::runtime_error {"Could not load vkCmdPushDescriptorSetKHR function"};
+  }
+
   mSurface = Surface::make(mWindow, mInstance);
   if (!mSurface) {
     throw std::runtime_error {"Could not create surface"};
@@ -319,7 +325,7 @@ void Example::_render()
   vkBeginCommandBuffer(frame.cmd_buffer, &cmd_buffer_begin_info);
 
   std::array<VkClearValue, 1> clear_values = {};
-  clear_values[0].color = VkClearColorValue {.float32 = {0.0f, 0.0f, 0.0f, 1.0f}};
+  clear_values[0].color = VkClearColorValue {.float32 = {0.0f, 0.0f, 0.2f, 1.0f}};
   // TODO clear_values[0].depthStencil = VkClearDepthStencilValue {1.0f, 0};
 
   const auto image_extent = mSwapchain.info().image_extent;

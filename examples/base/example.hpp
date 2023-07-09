@@ -24,9 +24,10 @@
 
 #pragma once
 
-#include <cstdlib>   // EXIT_SUCCESS
-#include <iostream>  // cerr, cout
-#include <vector>    // vector
+#include <cstdlib>    // EXIT_SUCCESS
+#include <exception>  // exception
+#include <iostream>   // cerr, cout
+#include <vector>     // vector
 
 #include <SDL2/SDL.h>
 #include <grace/grace.hpp>
@@ -76,6 +77,8 @@ class Example {
   Sampler mSampler;
   std::vector<Frame> mFrames;
   uint32 mFrameIndex {0};
+
+  PFN_vkCmdPushDescriptorSetKHR vkCmdPushDescriptorSetKHR {nullptr};
 
  private:
   [[nodiscard]] auto _try_acquire_image() -> bool;
