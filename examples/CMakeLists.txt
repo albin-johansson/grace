@@ -41,3 +41,4 @@ function(grace_example name src_dir)
   grace_enable_compiler_warnings(${name})
 endfunction()
 
+add_subdirectory(window)
