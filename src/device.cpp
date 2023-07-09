@@ -67,6 +67,7 @@ auto make_device_info(const std::vector<VkDeviceQueueCreateInfo>& queue_infos,
   return {
       .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
       .pNext = next,
+      .flags = 0,
       .queueCreateInfoCount = u32_size(queue_infos),
       .pQueueCreateInfos = data_or_null(queue_infos),
       .enabledLayerCount = u32_size(layers),
