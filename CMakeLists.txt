@@ -47,6 +47,7 @@ function(grace_enable_compiler_warnings target)
                            -Wconversion
                            -Wsign-conversion
                            -Werror
+                           -Wno-error=conversion
                            )
   endif ()
 endfunction()
