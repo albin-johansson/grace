@@ -42,3 +42,4 @@ function(grace_example name src_dir)
 endfunction()
 
 add_subdirectory(window)
+add_subdirectory(triangle)
