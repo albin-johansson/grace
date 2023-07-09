@@ -332,8 +332,11 @@ auto Swapchain::recreate(VkRenderPass render_pass) -> VkResult
     return result;
   }
 
+  new_swapchain.mInfo.depth_buffer_format = mInfo.depth_buffer_format;
+  new_swapchain.mInfo.uses_depth_buffer = mInfo.uses_depth_buffer;
+
   mDepthBuffer.destroy();
-  if (mInfo.uses_depth_buffer) {
+  if (new_swapchain.mInfo.uses_depth_buffer) {
     result = new_swapchain._recreate_depth_buffer();
     if (result != VK_SUCCESS) {
       return result;
@@ -403,13 +406,12 @@ auto Swapchain::_recreate_depth_buffer() -> VkResult
 {
   VkResult result = VK_SUCCESS;
 
-  const auto format = VK_FORMAT_D32_SFLOAT_S8_UINT;
   const uint32 mip_levels = 1;
 
   auto image = Image::make(mAllocator,
                            VK_IMAGE_TYPE_2D,
                            {mInfo.image_extent.width, mInfo.image_extent.height, 1},
-                           format,
+                           mInfo.depth_buffer_format,
                            VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
                            mip_levels,
                            VK_SAMPLE_COUNT_1_BIT,
@@ -420,9 +422,9 @@ auto Swapchain::_recreate_depth_buffer() -> VkResult
 
   auto image_view =
       ImageView::make(mDevice,
-                      image.get(),
+                      image,
                       VK_IMAGE_VIEW_TYPE_2D,
-                      format,
+                      mInfo.depth_buffer_format,
                       VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT,
                       mip_levels,
                       &result);

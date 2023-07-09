@@ -77,6 +77,7 @@ using SwapchainPresentModeFilter = std::function<bool(VkPresentModeKHR)>;
 struct SwapchainInfo final {
   VkExtent2D image_extent {0, 0};
   VkFormat image_format {VK_FORMAT_UNDEFINED};
+  VkFormat depth_buffer_format {VK_FORMAT_D32_SFLOAT_S8_UINT};
   VkColorSpaceKHR image_color_space {VK_COLOR_SPACE_SRGB_NONLINEAR_KHR};
   VkSharingMode image_sharing_mode {VK_SHARING_MODE_CONCURRENT};
   VkPresentModeKHR present_mode {VK_PRESENT_MODE_FIFO_KHR};
