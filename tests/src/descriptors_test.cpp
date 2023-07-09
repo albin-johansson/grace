@@ -49,7 +49,7 @@ TEST_F(DescriptorFixture, MakeBufferDescriptorWrite)
 {
   VkDescriptorSet set = make_fake_ptr<VkDescriptorSet>(982'120);
   const uint32 binding = 92;
-  const auto descriptor_type = VK_DESCRIPTOR_TYPE_SAMPLER;
+  const auto descriptor_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
   const uint32 descriptor_count = 1;
   const VkDescriptorBufferInfo buffer_info = {};
 
@@ -69,4 +69,57 @@ TEST_F(DescriptorFixture, MakeBufferDescriptorWrite)
   EXPECT_EQ(write.pBufferInfo, &buffer_info);
   EXPECT_EQ(write.pImageInfo, nullptr);
   EXPECT_EQ(write.pTexelBufferView, nullptr);
+}
+
+TEST_F(DescriptorFixture, MakeImageDescriptorWrite)
+{
+  VkDescriptorSet set = make_fake_ptr<VkDescriptorSet>(732);
+  const uint32 binding = 12;
+  const auto descriptor_type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  const uint32 descriptor_count = 1;
+  const VkDescriptorImageInfo image_info = {};
+
+  const auto write = make_image_descriptor_write(set,
+                                                 binding,
+                                                 descriptor_type,
+                                                 descriptor_count,
+                                                 &image_info);
+
+  EXPECT_EQ(write.sType, VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET);
+  EXPECT_EQ(write.pNext, nullptr);
+  EXPECT_EQ(write.dstSet, set);
+  EXPECT_EQ(write.dstBinding, binding);
+  EXPECT_EQ(write.descriptorType, descriptor_type);
+  EXPECT_EQ(write.descriptorCount, descriptor_count);
+  EXPECT_EQ(write.dstArrayElement, 0);
+  EXPECT_EQ(write.pBufferInfo, nullptr);
+  EXPECT_EQ(write.pImageInfo, &image_info);
+  EXPECT_EQ(write.pTexelBufferView, nullptr);
+}
+
+TEST_F(DescriptorFixture, MakeBufferViewDescriptorWrite)
+{
+  VkDescriptorSet set = make_fake_ptr<VkDescriptorSet>(732);
+  VkBufferView buffer_view = make_fake_ptr<VkBufferView>(912);
+
+  const uint32 binding = 7;
+  const auto descriptor_type = VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+  const uint32 descriptor_count = 3;
+
+  const auto write = make_buffer_view_descriptor_write(set,
+                                                       binding,
+                                                       descriptor_type,
+                                                       descriptor_count,
+                                                       &buffer_view);
+
+  EXPECT_EQ(write.sType, VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET);
+  EXPECT_EQ(write.pNext, nullptr);
+  EXPECT_EQ(write.dstSet, set);
+  EXPECT_EQ(write.dstBinding, binding);
+  EXPECT_EQ(write.descriptorType, descriptor_type);
+  EXPECT_EQ(write.descriptorCount, descriptor_count);
+  EXPECT_EQ(write.dstArrayElement, 0);
+  EXPECT_EQ(write.pBufferInfo, nullptr);
+  EXPECT_EQ(write.pImageInfo, nullptr);
+  EXPECT_EQ(write.pTexelBufferView, &buffer_view);
 }

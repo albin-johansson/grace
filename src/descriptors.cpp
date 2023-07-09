@@ -58,4 +58,46 @@ auto make_buffer_descriptor_write(VkDescriptorSet set,
   };
 }
 
+auto make_image_descriptor_write(VkDescriptorSet set,
+                                 const uint32 binding,
+                                 const VkDescriptorType descriptor_type,
+                                 const uint32 descriptor_count,
+                                 const VkDescriptorImageInfo* image_info)
+    -> VkWriteDescriptorSet
+{
+  return {
+      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+      .pNext = nullptr,
+      .dstSet = set,
+      .dstBinding = binding,
+      .dstArrayElement = 0,
+      .descriptorCount = descriptor_count,
+      .descriptorType = descriptor_type,
+      .pImageInfo = image_info,
+      .pBufferInfo = nullptr,
+      .pTexelBufferView = nullptr,
+  };
+}
+
+auto make_buffer_view_descriptor_write(VkDescriptorSet set,
+                                       const uint32 binding,
+                                       const VkDescriptorType descriptor_type,
+                                       const uint32 descriptor_count,
+                                       const VkBufferView* buffer_view)
+    -> VkWriteDescriptorSet
+{
+  return {
+      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+      .pNext = nullptr,
+      .dstSet = set,
+      .dstBinding = binding,
+      .dstArrayElement = 0,
+      .descriptorCount = descriptor_count,
+      .descriptorType = descriptor_type,
+      .pImageInfo = nullptr,
+      .pBufferInfo = nullptr,
+      .pTexelBufferView = buffer_view,
+  };
+}
+
 }  // namespace grace

@@ -35,11 +35,25 @@ namespace grace {
                                                VkDeviceSize offset = 0)
     -> VkDescriptorBufferInfo;
 
-[[nodiscard]] auto make_buffer_descriptor_write(
-    VkDescriptorSet set,
-    uint32 binding,
-    VkDescriptorType descriptor_type,
-    uint32 descriptor_count,
-    const VkDescriptorBufferInfo* buffer_info) -> VkWriteDescriptorSet;
+[[nodiscard]] auto make_buffer_descriptor_write(VkDescriptorSet set,
+                                                uint32 binding,
+                                                VkDescriptorType descriptor_type,
+                                                uint32 descriptor_count,
+                                                const VkDescriptorBufferInfo* buffer_info)
+    -> VkWriteDescriptorSet;
+
+[[nodiscard]] auto make_image_descriptor_write(VkDescriptorSet set,
+                                               uint32 binding,
+                                               VkDescriptorType descriptor_type,
+                                               uint32 descriptor_count,
+                                               const VkDescriptorImageInfo* image_info)
+    -> VkWriteDescriptorSet;
+
+[[nodiscard]] auto make_buffer_view_descriptor_write(VkDescriptorSet set,
+                                                     uint32 binding,
+                                                     VkDescriptorType descriptor_type,
+                                                     uint32 descriptor_count,
+                                                     const VkBufferView* buffer_view)
+    -> VkWriteDescriptorSet;
 
 }  // namespace grace
