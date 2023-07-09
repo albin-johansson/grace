@@ -44,7 +44,7 @@ jobs:
                    -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}} \
                    -DGRACE_USE_VULKAN_SUBSET=OFF \
                    -DGRACE_USE_SDL2=${{matrix.USE_SDL2}} \
-                   -DGRACE_ENABLE_DEMO=${{matrix.USE_SDL2}} \
+                   -DGRACE_ENABLE_EXAMPLES=${{matrix.USE_SDL2}} \
                    -DGRACE_ENABLE_TESTS=${{matrix.USE_SDL2}}
 
       - name: Build
@@ -120,7 +120,7 @@ jobs:
                    -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}} \
                    -DGRACE_USE_VULKAN_SUBSET=OFF \
                    -DGRACE_USE_SDL2=${{matrix.USE_SDL2}} \
-                   -DGRACE_ENABLE_DEMO=${{matrix.USE_SDL2}} \
+                   -DGRACE_ENABLE_EXAMPLES=${{matrix.USE_SDL2}} \
                    -DGRACE_ENABLE_TESTS=${{matrix.USE_SDL2}}
 
       - name: Build
@@ -173,7 +173,7 @@ jobs:
                    -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}} `
                    -DGRACE_USE_VULKAN_SUBSET=OFF `
                    -DGRACE_USE_SDL2=${{matrix.USE_SDL2}} `
-                   -DGRACE_ENABLE_DEMO=${{matrix.USE_SDL2}} `
+                   -DGRACE_ENABLE_EXAMPLES=${{matrix.USE_SDL2}} `
                    -DGRACE_ENABLE_TESTS=${{matrix.USE_SDL2}}
 
       - name: Build
