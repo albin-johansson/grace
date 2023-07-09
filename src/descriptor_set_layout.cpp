@@ -175,9 +175,11 @@ auto DescriptorSetLayoutBuilder::build(VkResult* result) const -> DescriptorSetL
   const auto binding_flags_info =
       make_descriptor_set_layout_binding_flags_info(descriptor_binding_flags);
 
-  const auto flags = mUsePushDescriptors
-                         ? VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR
-                         : VkDescriptorSetLayoutCreateFlags {};
+  VkDescriptorSetLayoutCreateFlags flags = 0;
+  if (mUsePushDescriptors) {
+    flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR;
+  }
+
   const auto layout_info =
       make_descriptor_set_layout_info(mBindings, flags, &binding_flags_info);
 
