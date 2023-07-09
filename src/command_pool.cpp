@@ -145,8 +145,12 @@ auto execute_now(const CommandContext& ctx, const CommandBufferCallback& callbac
       alloc_single_submit_command_buffer(ctx.device, ctx.cmd_pool, &result);
 
   if (cmd_buffer) {
-    callback(cmd_buffer);
-    result = execute_single_submit_commands(ctx, cmd_buffer);
+    const auto cmd_buffer_begin_info = make_command_buffer_begin_info();
+    result = vkBeginCommandBuffer(cmd_buffer, &cmd_buffer_begin_info);
+    if (result == VK_SUCCESS) {
+      callback(cmd_buffer);
+      result = execute_single_submit_commands(ctx, cmd_buffer);
+    }
   }
 
   return result;
