@@ -22,4 +22,6 @@ target_link_libraries(grace-tests
                       $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
                       )
 
+grace_enable_compiler_warnings(grace-tests)
+
 file(COPY "assets/shaders" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/assets")

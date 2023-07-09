@@ -26,6 +26,29 @@ if (GRACE_USE_SDL2 MATCHES ON)
   find_package(SDL2 CONFIG REQUIRED)
 endif ()
 
+function(grace_enable_compiler_warnings target)
+  if (CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
+    target_compile_options(${target}
+                           PRIVATE
+                           /EHsc
+                           /MP
+                           /W4
+                           /bigobj
+                           /permissive-
+                           /Zc:preprocessor
+                           /Zc:__cplusplus
+                           )
+  else ()
+    target_compile_options(${target}
+                           PRIVATE
+                           -Wall
+                           -Wextra
+                           -Wpedantic
+                           -Werror
+                           )
+  endif ()
+endfunction()
+
 add_subdirectory(src)
 
 if (GRACE_ENABLE_DEMO MATCHES ON)

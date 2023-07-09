@@ -40,24 +40,4 @@ if (GRACE_USE_SDL2 MATCHES ON)
                         )
 endif ()
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang|AppleClang|GNU")
-  target_compile_options(grace
-                         PRIVATE
-                         -Wall
-                         -Wextra
-                         -Wpedantic
-                         -Werror
-                         )
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-  target_compile_options(grace
-                         PRIVATE
-                         /EHsc
-                         /MP
-                         /W4
-                         /bigobj
-                         /permissive-
-                         /Zc:preprocessor
-                         /Zc:__cplusplus
-                         )
-endif ()
-
+grace_enable_compiler_warnings(grace)

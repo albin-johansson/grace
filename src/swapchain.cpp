@@ -25,7 +25,6 @@
 #include "grace/swapchain.hpp"
 
 #include <algorithm>  // clamp
-#include <limits>     // numeric_limits
 #include <utility>    // move
 
 #include "grace/physical_device.hpp"
@@ -243,7 +242,6 @@ auto Swapchain::make(VkDevice device,
     return {};
   }
 
-
   // Note: framebuffers must be created at a later stage by the user.
 
   if (result) {
@@ -447,7 +445,7 @@ auto Swapchain::acquire_next_image(VkSemaphore semaphore, VkFence fence) -> VkRe
 
   return vkAcquireNextImageKHR(mDevice,
                                mSwapchain,
-                               std::numeric_limits<uint64>::max(),
+                               kMaxU64,
                                semaphore,
                                fence,
                                &mImageIndex);

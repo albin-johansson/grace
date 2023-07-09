@@ -116,7 +116,7 @@ TEST_F(RenderPassFixture, MakeRenderPassBeginInfo)
   VkFramebuffer framebuffer = make_fake_ptr<VkFramebuffer>(2'048);
   const VkRect2D render_area = {{10, 20}, {100, 150}};
   VkClearValue clear_values[1] {};
-  clear_values[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
+  clear_values[0].color = {.float32 = {0.0f, 0.0f, 0.0f, 1.0f}};
 
   const auto info =
       make_render_pass_begin_info(render_pass, framebuffer, render_area, clear_values, 1);
