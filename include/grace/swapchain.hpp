@@ -83,6 +83,7 @@ struct SwapchainInfo final {
   VkSurfaceTransformFlagBitsKHR pre_transform {VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR};
   uint32 min_image_count {};
   std::vector<uint32> queue_family_indices;
+  bool uses_depth_buffer {false};
 
   void copy_from(const VkSwapchainCreateInfoKHR& swapchain_info);
 };
@@ -115,7 +116,7 @@ class Swapchain final {
 
   void destroy() noexcept;
 
-  auto recreate(VkRenderPass render_pass, bool with_depth_buffer = true) -> VkResult;
+  auto recreate(VkRenderPass render_pass) -> VkResult;
 
   auto acquire_next_image(VkSemaphore semaphore = VK_NULL_HANDLE,
                           VkFence fence = VK_NULL_HANDLE) -> VkResult;

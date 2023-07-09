@@ -296,8 +296,7 @@ auto Swapchain::make(VkSurfaceKHR surface,
   return Swapchain::make(device, allocator, swapchain_info, result);
 }
 
-auto Swapchain::recreate(VkRenderPass render_pass, const bool with_depth_buffer)
-    -> VkResult
+auto Swapchain::recreate(VkRenderPass render_pass) -> VkResult
 {
   VkResult result = VK_SUCCESS;
 
@@ -333,7 +332,8 @@ auto Swapchain::recreate(VkRenderPass render_pass, const bool with_depth_buffer)
     return result;
   }
 
-  if (with_depth_buffer) {
+  mDepthBuffer.destroy();
+  if (mInfo.uses_depth_buffer) {
     result = new_swapchain._recreate_depth_buffer();
     if (result != VK_SUCCESS) {
       return result;

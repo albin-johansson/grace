@@ -412,12 +412,13 @@ auto Example::_recreate_swapchain() -> VkResult
 
   auto& swapchain_info = mSwapchain.info();
   swapchain_info.image_extent = window_size;
+  swapchain_info.uses_depth_buffer = false;
 
   std::cout << "New swapchain image extent: "  //
             << swapchain_info.image_extent.width << 'x'
             << swapchain_info.image_extent.height << '\n';
 
-  return mSwapchain.recreate(mRenderPass, false);  // TODO use depth buffer
+  return mSwapchain.recreate(mRenderPass);
 }
 
 }  // namespace grace::examples
