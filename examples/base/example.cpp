@@ -333,7 +333,10 @@ void Example::_render()
                        &render_pass_begin_info,
                        VK_SUBPASS_CONTENTS_INLINE);
 
-  const auto viewport = make_viewport(0, 0, image_extent.width, image_extent.height);
+  const auto viewport = make_viewport(0,
+                                      0,
+                                      static_cast<float>(image_extent.width),
+                                      static_cast<float>(image_extent.height));
   vkCmdSetViewport(frame.cmd_buffer, 0, 1, &viewport);
 
   const auto scissor = make_rect_2d(0, 0, image_extent.width, image_extent.height);

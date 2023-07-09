@@ -45,6 +45,8 @@ function(grace_enable_compiler_warnings target)
                            -Wall
                            -Wextra
                            -Wpedantic
+                           -Wconversion
+                           -Wsign-conversion
                            -Werror
                            )
   endif ()
