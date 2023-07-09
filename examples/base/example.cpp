@@ -174,6 +174,8 @@ Example::Example(const char* name)
     throw std::runtime_error {"Could not create swapchain"};
   }
 
+  mSwapchain.info().uses_depth_buffer = true;
+
   const auto subpass_stages = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
                               VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
   const auto main_subpass_access =
@@ -186,10 +188,10 @@ Example::Example(const char* name)
                                                                main_subpass_access);
   mRenderPass = RenderPassBuilder {mDevice}
                     .color_attachment(mSwapchain.info().image_format)
-                    // TODO .depth_attachment(swapchain.get_depth_buffer_format())
+                    .depth_attachment(mSwapchain.info().depth_buffer_format)
                     .begin_subpass()
                     .use_color_attachment(0)
-                    // TODO .set_depth_attachment(1)
+                    .use_depth_attachment(1)
                     .end_subpass()
                     .subpass_dependency(main_subpass_dependency)
                     .build(&result);
@@ -331,9 +333,9 @@ void Example::_render()
   vkResetCommandBuffer(frame.cmd_buffer, 0);
   vkBeginCommandBuffer(frame.cmd_buffer, &cmd_buffer_begin_info);
 
-  std::array<VkClearValue, 1> clear_values = {};
+  std::array<VkClearValue, 2> clear_values = {};
   clear_values[0].color = VkClearColorValue {.float32 = {0.0f, 0.0f, 0.2f, 1.0f}};
-  // TODO clear_values[0].depthStencil = VkClearDepthStencilValue {1.0f, 0};
+  clear_values[1].depthStencil = VkClearDepthStencilValue {1.0f, 0};
 
   const auto image_extent = mSwapchain.info().image_extent;
   const auto render_pass_begin_info =
@@ -419,7 +421,6 @@ auto Example::_recreate_swapchain() -> VkResult
 
   auto& swapchain_info = mSwapchain.info();
   swapchain_info.image_extent = window_size;
-  swapchain_info.uses_depth_buffer = false;
 
   std::cout << "New swapchain image extent: "  //
             << swapchain_info.image_extent.width << 'x'
