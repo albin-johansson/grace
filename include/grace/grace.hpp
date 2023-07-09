@@ -29,6 +29,7 @@
 #include "command_pool.hpp"
 #include "common.hpp"
 #include "context.hpp"
+#include "descriptor_pool.hpp"
 #include "descriptor_set_layout.hpp"
 #include "descriptors.hpp"
 #include "device.hpp"
