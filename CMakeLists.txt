@@ -28,7 +28,7 @@ if (GRACE_USE_SDL2 MATCHES ON)
 endif ()
 
 function(grace_enable_compiler_warnings target)
-  if (CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
+  if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${target}
                            PRIVATE
                            /EHsc
