@@ -171,6 +171,10 @@ class Buffer final {
    */
   auto set_data(const void* data, uint64 data_size) -> VkResult;
 
+  void bind_as_vertex_buffer(VkCommandBuffer cmd_buffer);
+
+  void bind_as_index_buffer(VkCommandBuffer cmd_buffer, VkIndexType index_type);
+
   [[nodiscard]] auto get() noexcept -> VkBuffer { return mBuffer; }
 
   [[nodiscard]] auto allocator() noexcept -> VmaAllocator { return mAllocator; }

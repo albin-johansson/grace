@@ -255,4 +255,16 @@ auto Buffer::set_data(const void* data, const uint64 data_size) -> VkResult
   return VK_SUCCESS;
 }
 
+void Buffer::bind_as_vertex_buffer(VkCommandBuffer cmd_buffer)
+{
+  const VkDeviceSize offsets[] = {0};
+  vkCmdBindVertexBuffers(cmd_buffer, 0, 1, &mBuffer, offsets);
+}
+
+void Buffer::bind_as_index_buffer(VkCommandBuffer cmd_buffer,
+                                  const VkIndexType index_type)
+{
+  vkCmdBindIndexBuffer(cmd_buffer, mBuffer, 0, index_type);
+}
+
 }  // namespace grace
