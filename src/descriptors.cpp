@@ -22,33 +22,40 @@
  * SOFTWARE.
  */
 
-#pragma once
+#include "grace/descriptors.hpp"
 
-#include "allocator.hpp"
-#include "buffer.hpp"
-#include "command_pool.hpp"
-#include "common.hpp"
-#include "context.hpp"
-#include "descriptor_set_layout.hpp"
-#include "descriptors.hpp"
-#include "device.hpp"
-#include "extras/sdl.hpp"
-#include "extras/window.hpp"
-#include "fence.hpp"
-#include "framebuffer.hpp"
-#include "image.hpp"
-#include "image_view.hpp"
-#include "instance.hpp"
-#include "physical_device.hpp"
-#include "pipeline.hpp"
-#include "pipeline_cache.hpp"
-#include "pipeline_layout.hpp"
-#include "queue.hpp"
-#include "render_pass.hpp"
-#include "sampler.hpp"
-#include "semaphore.hpp"
-#include "shader_module.hpp"
-#include "surface.hpp"
-#include "swapchain.hpp"
-#include "texture.hpp"
-#include "version.hpp"
+namespace grace {
+
+auto make_descriptor_buffer_info(VkBuffer buffer,
+                                 const VkDeviceSize range,
+                                 const VkDeviceSize offset) -> VkDescriptorBufferInfo
+{
+  return {
+      .buffer = buffer,
+      .offset = offset,
+      .range = range,
+  };
+}
+
+auto make_buffer_descriptor_write(VkDescriptorSet set,
+                                  const uint32 binding,
+                                  const VkDescriptorType descriptor_type,
+                                  const uint32 descriptor_count,
+                                  const VkDescriptorBufferInfo* buffer_info)
+    -> VkWriteDescriptorSet
+{
+  return {
+      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+      .pNext = nullptr,
+      .dstSet = set,
+      .dstBinding = binding,
+      .dstArrayElement = 0,
+      .descriptorCount = descriptor_count,
+      .descriptorType = descriptor_type,
+      .pImageInfo = nullptr,
+      .pBufferInfo = buffer_info,
+      .pTexelBufferView = nullptr,
+  };
+}
+
+}  // namespace grace

@@ -24,31 +24,22 @@
 
 #pragma once
 
-#include "allocator.hpp"
-#include "buffer.hpp"
-#include "command_pool.hpp"
+#include <vulkan/vulkan.h>
+
 #include "common.hpp"
-#include "context.hpp"
-#include "descriptor_set_layout.hpp"
-#include "descriptors.hpp"
-#include "device.hpp"
-#include "extras/sdl.hpp"
-#include "extras/window.hpp"
-#include "fence.hpp"
-#include "framebuffer.hpp"
-#include "image.hpp"
-#include "image_view.hpp"
-#include "instance.hpp"
-#include "physical_device.hpp"
-#include "pipeline.hpp"
-#include "pipeline_cache.hpp"
-#include "pipeline_layout.hpp"
-#include "queue.hpp"
-#include "render_pass.hpp"
-#include "sampler.hpp"
-#include "semaphore.hpp"
-#include "shader_module.hpp"
-#include "surface.hpp"
-#include "swapchain.hpp"
-#include "texture.hpp"
-#include "version.hpp"
+
+namespace grace {
+
+[[nodiscard]] auto make_descriptor_buffer_info(VkBuffer buffer,
+                                               VkDeviceSize range,
+                                               VkDeviceSize offset = 0)
+    -> VkDescriptorBufferInfo;
+
+[[nodiscard]] auto make_buffer_descriptor_write(
+    VkDescriptorSet set,
+    uint32 binding,
+    VkDescriptorType descriptor_type,
+    uint32 descriptor_count,
+    const VkDescriptorBufferInfo* buffer_info) -> VkWriteDescriptorSet;
+
+}  // namespace grace
