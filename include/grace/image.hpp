@@ -159,6 +159,8 @@ class Image final {
   [[nodiscard]] auto info() noexcept -> ImageInfo& { return mInfo; }
   [[nodiscard]] auto info() const noexcept -> const ImageInfo& { return mInfo; }
 
+  [[nodiscard]] operator VkImage() noexcept { return mImage; }
+
   /// Indicates whether the image contains a non-null handle.
   [[nodiscard]] explicit operator bool() const noexcept
   {

@@ -108,6 +108,8 @@ class ImageView final {
 
   [[nodiscard]] auto device() noexcept -> VkDevice { return mDevice; }
 
+  [[nodiscard]] operator VkImageView() noexcept { return mImageView; }
+
   /// Indicates whether the image view contains a non-null handle.
   [[nodiscard]] explicit operator bool() const noexcept
   {
