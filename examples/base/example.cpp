@@ -273,6 +273,13 @@ void Example::start()
       if (event.type == SDL_QUIT) {
         running = false;
       }
+      else if (event.type == SDL_MOUSEMOTION && event.motion.state == SDL_PRESSED) {
+        on_mouse_dragged(static_cast<float>(event.motion.xrel),
+                         static_cast<float>(event.motion.yrel));
+      }
+      else if (event.type == SDL_KEYDOWN) {
+        on_key_pressed(event.key.keysym.scancode);
+      }
     }
 
     if (!running) {

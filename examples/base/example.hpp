@@ -62,6 +62,10 @@ class Example {
  protected:
   virtual void record_commands() {};
 
+  virtual void on_mouse_dragged([[maybe_unused]] float dx, [[maybe_unused]] float dy) {}
+
+  virtual void on_key_pressed([[maybe_unused]] SDL_Scancode key) {}
+
   Window mWindow;
   Instance mInstance;
   Surface mSurface;
