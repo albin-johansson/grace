@@ -291,8 +291,8 @@ void Image::change_layout(const CommandContext& ctx, const VkImageLayout new_lay
                             mImage,
                             mInfo.layout,
                             new_layout,
-                            mInfo.mip_levels,
-                            0);
+                            0,
+                            mInfo.mip_levels);
     mInfo.layout = new_layout;
   });
 }
