@@ -226,10 +226,17 @@ auto Buffer::for_device(const CommandContext& ctx,
     return Buffer {};
   }
 
-  execute_now(ctx, [&](VkCommandBuffer cmds) {
-    VkBufferCopy region = {};
-    region.size = data_size;
-    vkCmdCopyBuffer(cmds, staging_buffer.mBuffer, device_buffer.mBuffer, 1, &region);
+  execute_now(ctx, [&](VkCommandBuffer cmd_buffer) {
+    const VkBufferCopy region = {
+        .srcOffset = 0,
+        .dstOffset = 0,
+        .size = data_size,
+    };
+    vkCmdCopyBuffer(cmd_buffer,
+                    staging_buffer.mBuffer,
+                    device_buffer.mBuffer,
+                    1,
+                    &region);
   });
 
   return device_buffer;
@@ -238,9 +245,10 @@ auto Buffer::for_device(const CommandContext& ctx,
 auto Buffer::set_data(const void* data, const uint64 data_size) -> VkResult
 {
   void* mapped_data = nullptr;
-  if (const auto result = vmaMapMemory(mAllocator, mAllocation, &mapped_data);
-      result != VK_SUCCESS) {
-    return result;
+
+  const auto map_result = vmaMapMemory(mAllocator, mAllocation, &mapped_data);
+  if (map_result != VK_SUCCESS) {
+    return map_result;
   }
 
   VmaAllocationInfo allocation_info = {};
