@@ -200,12 +200,12 @@ auto Buffer::for_device(VmaAllocator allocator,
               result);
 }
 
-auto Buffer::for_device_with_data(const CommandContext& ctx,
-                                  VmaAllocator allocator,
-                                  const void* data,
-                                  const uint64 data_size,
-                                  const VkBufferUsageFlags buffer_usage,
-                                  VkResult* result) -> Buffer
+auto Buffer::for_device(const CommandContext& ctx,
+                        VmaAllocator allocator,
+                        const void* data,
+                        const uint64 data_size,
+                        const VkBufferUsageFlags buffer_usage,
+                        VkResult* result) -> Buffer
 {
   auto staging_buffer = Buffer::for_staging(allocator, data_size, buffer_usage, result);
   if (!staging_buffer) {

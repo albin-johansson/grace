@@ -149,12 +149,12 @@ class Buffer final {
    *
    * \return a potentially null buffer.
    */
-  [[nodiscard]] static auto for_device_with_data(const CommandContext& ctx,
-                                                 VmaAllocator allocator,
-                                                 const void* data,
-                                                 uint64 data_size,
-                                                 VkBufferUsageFlags buffer_usage,
-                                                 VkResult* result = nullptr) -> Buffer;
+  [[nodiscard]] static auto for_device(const CommandContext& ctx,
+                                       VmaAllocator allocator,
+                                       const void* data,
+                                       uint64 data_size,
+                                       VkBufferUsageFlags buffer_usage,
+                                       VkResult* result = nullptr) -> Buffer;
 
   void destroy() noexcept;
 
