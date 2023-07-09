@@ -54,6 +54,8 @@ endfunction()
 add_subdirectory(src)
 
 if (GRACE_ENABLE_EXAMPLES MATCHES ON)
+  find_package(imgui CONFIG REQUIRED)
+  find_package(glm CONFIG REQUIRED)
   add_subdirectory(examples)
 endif ()
 

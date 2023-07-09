@@ -25,6 +25,14 @@
       ],
       "platform": "!linux"
     },
+    {
+      "name": "imgui",
+      "features": [
+        "sdl2-binding",
+        "vulkan-binding"
+      ]
+    },
+    "glm",
     "gtest"
   ]
 }

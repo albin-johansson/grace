@@ -22,12 +22,20 @@ function(grace_example name src_dir)
   target_link_libraries(${name}
                         PRIVATE
                         grace
+                        imgui::imgui
+                        glm::glm
                         $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
                         )
 
   target_include_directories(${name}
                              PRIVATE
                              ${GRACE_EXAMPLE_BASE_DIR}
+                             )
+
+  target_compile_definitions(${name}
+                             PRIVATE
+                             GLM_FORCE_RADIANS
+                             GLM_FORCE_DEPTH_ZERO_TO_ONE
                              )
 
   grace_enable_compiler_warnings(${name})
