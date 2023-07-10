@@ -89,6 +89,8 @@ Example::Example(const char* name)
     throw std::runtime_error {"Could not create window"};
   }
 
+  enable_dark_title_bar(mWindow);
+
   VkResult result = VK_ERROR_UNKNOWN;
 
   const auto instance_extensions = get_required_instance_extensions(mWindow);
