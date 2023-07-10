@@ -64,7 +64,7 @@ Buffer::Buffer(Buffer&& other) noexcept
   other.mAllocation = VK_NULL_HANDLE;
 }
 
-Buffer& Buffer::operator=(Buffer&& other) noexcept
+auto Buffer::operator=(Buffer&& other) noexcept -> Buffer&
 {
   if (this != &other) {
     destroy();
