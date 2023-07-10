@@ -276,6 +276,7 @@ Example::Example(const char* name)
 void Example::start()
 {
   mWindow.show();
+  SDL_MaximizeWindow(mWindow);
 
   bool running = true;
   while (running) {
