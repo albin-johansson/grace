@@ -167,7 +167,8 @@ auto Buffer::for_uniforms(VmaAllocator allocator, const uint64 size, VkResult* r
       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
   const VkMemoryPropertyFlags preferred_mem_props = 0;
   const VmaAllocationCreateFlags allocation_flags =
-      VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
+      VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT |
+      VMA_ALLOCATION_CREATE_MAPPED_BIT;
 
   return make(allocator,
               size,
@@ -179,10 +180,10 @@ auto Buffer::for_uniforms(VmaAllocator allocator, const uint64 size, VkResult* r
               result);
 }
 
-auto Buffer::for_device(VmaAllocator allocator,
-                        const uint64 size,
-                        VkBufferUsageFlags buffer_usage,
-                        VkResult* result) -> Buffer
+auto Buffer::on_gpu(VmaAllocator allocator,
+                    const uint64 size,
+                    VkBufferUsageFlags buffer_usage,
+                    VkResult* result) -> Buffer
 {
   buffer_usage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
@@ -200,16 +201,16 @@ auto Buffer::for_device(VmaAllocator allocator,
               result);
 }
 
-auto Buffer::for_device(const CommandContext& ctx,
-                        VmaAllocator allocator,
-                        const void* data,
-                        const uint64 data_size,
-                        const VkBufferUsageFlags buffer_usage,
-                        VkResult* result) -> Buffer
+auto Buffer::on_gpu(const CommandContext& ctx,
+                    VmaAllocator allocator,
+                    const void* data,
+                    const uint64 data_size,
+                    const VkBufferUsageFlags buffer_usage,
+                    VkResult* result) -> Buffer
 {
   auto staging_buffer = Buffer::for_staging(allocator, data_size, buffer_usage, result);
   if (!staging_buffer) {
-    return Buffer {};
+    return {};
   }
 
   if (const auto status = staging_buffer.set_data(data, data_size);
@@ -218,15 +219,15 @@ auto Buffer::for_device(const CommandContext& ctx,
       *result = status;
     }
 
-    return Buffer {};
+    return {};
   }
 
-  auto device_buffer = Buffer::for_device(allocator, data_size, buffer_usage, result);
+  auto device_buffer = Buffer::on_gpu(allocator, data_size, buffer_usage, result);
   if (!device_buffer) {
-    return Buffer {};
+    return {};
   }
 
-  execute_now(ctx, [&](VkCommandBuffer cmd_buffer) {
+  const auto execute_status = execute_now(ctx, [&](VkCommandBuffer cmd_buffer) {
     const VkBufferCopy region = {
         .srcOffset = 0,
         .dstOffset = 0,
@@ -239,7 +240,15 @@ auto Buffer::for_device(const CommandContext& ctx,
                     &region);
   });
 
-  return device_buffer;
+  if (result) {
+    *result = execute_status;
+  }
+
+  if (execute_status == VK_SUCCESS) {
+    return device_buffer;
+  }
+
+  return {};
 }
 
 auto Buffer::set_data(const void* data, const uint64 data_size) -> VkResult

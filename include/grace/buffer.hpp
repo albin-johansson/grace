@@ -132,10 +132,10 @@ class Buffer final {
    *
    * \return a potentially null buffer.
    */
-  [[nodiscard]] static auto for_device(VmaAllocator allocator,
-                                       uint64 size,
-                                       VkBufferUsageFlags buffer_usage,
-                                       VkResult* result = nullptr) -> Buffer;
+  [[nodiscard]] static auto on_gpu(VmaAllocator allocator,
+                                   uint64 size,
+                                   VkBufferUsageFlags buffer_usage,
+                                   VkResult* result = nullptr) -> Buffer;
 
   /**
    * Creates a device (GPU) buffer filled with the specified data.
@@ -149,12 +149,12 @@ class Buffer final {
    *
    * \return a potentially null buffer.
    */
-  [[nodiscard]] static auto for_device(const CommandContext& ctx,
-                                       VmaAllocator allocator,
-                                       const void* data,
-                                       uint64 data_size,
-                                       VkBufferUsageFlags buffer_usage,
-                                       VkResult* result = nullptr) -> Buffer;
+  [[nodiscard]] static auto on_gpu(const CommandContext& ctx,
+                                   VmaAllocator allocator,
+                                   const void* data,
+                                   uint64 data_size,
+                                   VkBufferUsageFlags buffer_usage,
+                                   VkResult* result = nullptr) -> Buffer;
 
   void destroy() noexcept;
 
