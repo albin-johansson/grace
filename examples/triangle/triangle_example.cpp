@@ -94,9 +94,9 @@ TriangleExample::TriangleExample()
   const CommandContext cmd_context {mDevice, mGraphicsQueue, mGraphicsCommandPool};
 
   const Vertex vertices[] = {
-      {.position {1.0f, 1.0f, 0.0f}, .color = {1.0f, 0.0f, 0.0f}},
-      {.position {-1.0f, 1.0f, 0.0f}, .color = {0.0f, 1.0f, 0.0f}},
-      {.position {0.0f, -1.0f, 0.0f}, .color = {0.0f, 0.0f, 1.0f}},
+      {.position {1, 1, 0}, .color = {1, 0, 0}},
+      {.position {-1, 1, 0}, .color = {0, 1, 0}},
+      {.position {0, -1, 0}, .color = {0, 0, 1}},
   };
 
   const uint32 indices[] = {0, 1, 2};
@@ -130,8 +130,8 @@ void TriangleExample::record_commands()
   const auto aspect_ratio = static_cast<float>(swapchain_info.image_extent.width) /
                             static_cast<float>(swapchain_info.image_extent.height);
   mMatrices.projection =
-      glm::perspective(glm::radians(mFOV), aspect_ratio, mNearPlane, mFarPlane);
-  mMatrices.view = glm::lookAt(mCameraPos, mCameraPos + mCameraDir, mWorldUp);
+      glm::perspectiveLH(glm::radians(mFOV), aspect_ratio, mNearPlane, mFarPlane);
+  mMatrices.view = glm::lookAtLH(mCameraPos, mCameraPos + mCameraDir, mWorldUp);
 
   auto& matrix_buffer = mMatrixBuffers.at(mFrameIndex);
   matrix_buffer.set_data(&mMatrices, sizeof mMatrices);
