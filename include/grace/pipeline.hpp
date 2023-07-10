@@ -242,8 +242,8 @@ class GraphicsPipelineBuilder final {
                 float y,
                 float width,
                 float height,
-                float min_depth = 0.0,
-                float max_depth = 1.0f) -> Self&;
+                float min_depth = kDefaultMinDepth,
+                float max_depth = kDefaultMaxDepth) -> Self&;
 
   /**
    * Adds a scissor to the pipeline.
@@ -347,8 +347,9 @@ class GraphicsPipelineBuilder final {
    *
    * \return the pipeline builder itself.
    */
-  auto depth_bounds_test(bool enabled, float min_depth = 0.0f, float max_depth = 1.0f)
-      -> Self&;
+  auto depth_bounds_test(bool enabled,
+                         float min_depth = kDefaultMinDepth,
+                         float max_depth = kDefaultMaxDepth) -> Self&;
 
   /**
    * Controls depth fragment writes.
