@@ -39,6 +39,8 @@ function(grace_example name src_dir)
                              )
 
   grace_enable_compiler_warnings(${name})
+
+  file(COPY "${GRACE_EXAMPLE_BASE_DIR}/shaders" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
 endfunction()
 
 add_subdirectory(window)
