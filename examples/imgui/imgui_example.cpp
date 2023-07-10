@@ -155,7 +155,7 @@ void ImGuiExample::record_commands()
   ImGui::Render();
   ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(),
                                   frame.cmd_buffer,
-                                  mUseCustomPipeline ? mPipeline : VK_NULL_HANDLE);
+                                  mUseCustomPipeline ? mPipeline.get() : VK_NULL_HANDLE);
 }
 
 void ImGuiExample::_record_ui()
