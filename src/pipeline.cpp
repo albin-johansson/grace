@@ -523,7 +523,7 @@ auto GraphicsPipelineBuilder::build(VkResult* result) const -> GraphicsPipeline
   const auto color_blend_state = get_color_blend_state_info();
   const auto dynamic_state = get_dynamic_state_info();
 
-  pipeline_info.stageCount = 2;
+  pipeline_info.stageCount = u32_size(shader_stages);
   pipeline_info.pStages = shader_stages;
   pipeline_info.pVertexInputState = &vertex_input_state;
   pipeline_info.pInputAssemblyState = &input_assembly_state;
