@@ -36,6 +36,7 @@ function(grace_example name src_dir)
                              PRIVATE
                              GLM_FORCE_RADIANS
                              GLM_FORCE_DEPTH_ZERO_TO_ONE
+                             GLM_FORCE_SIZE_T_LENGTH
                              )
 
   grace_enable_compiler_warnings(${name})
