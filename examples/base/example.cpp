@@ -413,14 +413,17 @@ void Example::_present_image()
 
 auto Example::_recreate_swapchain() -> VkResult
 {
-  auto window_size = mWindow.get_size_in_pixels();
-  while (window_size.width == 0 || window_size.height == 0) {
+  VkSurfaceCapabilitiesKHR surface_capabilities = {};
+  vkGetPhysicalDeviceSurfaceCapabilitiesKHR(mGPU, mSurface, &surface_capabilities);
+
+  while (surface_capabilities.currentExtent.width == 0 ||
+         surface_capabilities.currentExtent.height == 0) {
     SDL_WaitEvent(nullptr);
-    window_size = mWindow.get_size_in_pixels();
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(mGPU, mSurface, &surface_capabilities);
   }
 
   auto& swapchain_info = mSwapchain.info();
-  swapchain_info.image_extent = window_size;
+  swapchain_info.image_extent = pick_image_extent(mWindow, surface_capabilities);
 
   std::cout << "New swapchain image extent: "  //
             << swapchain_info.image_extent.width << 'x'
