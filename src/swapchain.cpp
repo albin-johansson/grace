@@ -25,6 +25,7 @@
 #include "grace/swapchain.hpp"
 
 #include <algorithm>  // clamp
+#include <cassert>    // assert
 #include <utility>    // move
 
 #include "grace/physical_device.hpp"
@@ -214,7 +215,7 @@ auto Swapchain::make(VkDevice device,
                      const VkSwapchainCreateInfoKHR& swapchain_info,
                      VkResult* result) -> Swapchain
 {
-  VkResult status = VK_SUCCESS;
+  VkResult status = VK_ERROR_UNKNOWN;
 
   Swapchain swapchain;
   status = vkCreateSwapchainKHR(device, &swapchain_info, nullptr, &swapchain.mSwapchain);
@@ -270,19 +271,12 @@ auto Swapchain::make(VkSurfaceKHR surface,
                                swapchain_support.surface_capabilities.maxImageCount);
 
   const auto queue_family_indices = get_queue_family_indices(gpu, surface);
-  const auto graphics_family_index = queue_family_indices.graphics.value();
-  const auto present_family_index = queue_family_indices.present.value();
+  const auto unique_queue_family_indices = get_unique_queue_family_indices(gpu, surface);
 
-  const auto sharing_mode = (graphics_family_index != present_family_index)
-                                ? VK_SHARING_MODE_CONCURRENT
-                                : VK_SHARING_MODE_EXCLUSIVE;
-
-  std::vector<uint32> queue_family_indices_vec;
-  if (sharing_mode == VK_SHARING_MODE_CONCURRENT) {
-    queue_family_indices_vec.reserve(2);
-    queue_family_indices_vec.push_back(graphics_family_index);
-    queue_family_indices_vec.push_back(present_family_index);
-  }
+  const auto sharing_mode =
+      (queue_family_indices.graphics != queue_family_indices.present)
+          ? VK_SHARING_MODE_CONCURRENT
+          : VK_SHARING_MODE_EXCLUSIVE;
 
   const auto swapchain_info = make_swapchain_info(surface,
                                                   swapchain_support.surface_capabilities,
@@ -290,7 +284,7 @@ auto Swapchain::make(VkSurfaceKHR surface,
                                                   image_extent,
                                                   surface_format,
                                                   present_mode,
-                                                  queue_family_indices_vec,
+                                                  unique_queue_family_indices,
                                                   sharing_mode);
 
   return Swapchain::make(device, allocator, swapchain_info, result);
