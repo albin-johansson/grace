@@ -24,7 +24,8 @@
 
 #include "grace/pipeline.hpp"
 
-#include <cstring>  // memcpy
+#include <algorithm>  // find
+#include <cstring>    // memcpy
 
 #include "grace/shader_module.hpp"
 
@@ -584,7 +585,22 @@ auto GraphicsPipelineBuilder::get_tessellation_state_info() const
 auto GraphicsPipelineBuilder::get_viewport_state_info() const
     -> VkPipelineViewportStateCreateInfo
 {
-  return make_pipeline_viewport_state_info(mViewports, mScissors);
+  auto info = make_pipeline_viewport_state_info(mViewports, mScissors);
+
+  if (std::find(mDynamicStates.begin(),
+                mDynamicStates.end(),
+                VK_DYNAMIC_STATE_VIEWPORT) != mDynamicStates.end()) {
+    info.pViewports = nullptr;
+    info.viewportCount = 1;
+  }
+
+  if (std::find(mDynamicStates.begin(), mDynamicStates.end(), VK_DYNAMIC_STATE_SCISSOR) !=
+      mDynamicStates.end()) {
+    info.pScissors = nullptr;
+    info.scissorCount = 1;
+  }
+
+  return info;
 }
 
 auto GraphicsPipelineBuilder::get_rasterization_state_info() const

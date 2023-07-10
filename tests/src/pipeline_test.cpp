@@ -398,8 +398,8 @@ TEST_F(PipelineFixture, GraphicsPipelineBuilderMinimalPipeline)
           .vertex_attribute(0, 1, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float))
           .vertex_attribute(0, 2, VK_FORMAT_R32G32_SFLOAT, 6 * sizeof(float))
           .color_blend_attachment(false)
-          .viewport(0, 0, 800, 600)
-          .scissor(0, 0, 800, 600)
+          .dynamic_state(VK_DYNAMIC_STATE_VIEWPORT)
+          .dynamic_state(VK_DYNAMIC_STATE_SCISSOR)
           .build(&result);
 
   ASSERT_EQ(result, VK_SUCCESS);
