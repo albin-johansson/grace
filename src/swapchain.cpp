@@ -414,6 +414,7 @@ auto Swapchain::_recreate_depth_buffer() -> VkResult
     return result;
   }
 
+  // TODO aspect flags should vary depending on format (might exclude stencil)
   auto image_view =
       ImageView::make(mDevice,
                       image,
@@ -473,6 +474,11 @@ auto Swapchain::get_current_framebuffer() -> VkFramebuffer
 auto Swapchain::get_current_image_index() -> uint32
 {
   return mImageIndex;
+}
+
+auto Swapchain::get_image_count() const -> uint32
+{
+  return u32_size(mImages);
 }
 
 auto Swapchain::get_depth_buffer_format() const -> VkFormat

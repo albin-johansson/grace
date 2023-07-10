@@ -130,6 +130,8 @@ class Swapchain final {
 
   [[nodiscard]] auto get_current_image_index() -> uint32;
 
+  [[nodiscard]] auto get_image_count() const -> uint32;
+
   [[nodiscard]] auto get_depth_buffer_format() const -> VkFormat;
 
   [[nodiscard]] auto is_ready() const -> bool;
