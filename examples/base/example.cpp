@@ -93,7 +93,9 @@ Example::Example(const char* name)
 
   VkResult result = VK_ERROR_UNKNOWN;
 
-  const auto instance_extensions = get_required_instance_extensions(mWindow);
+  auto instance_extensions = get_required_instance_extensions(mWindow);
+  instance_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+
   mInstance = Instance::make(name,
                              kEnabledLayers,
                              instance_extensions,
@@ -103,6 +105,11 @@ Example::Example(const char* name)
   if (!mInstance) {
     std::cerr << "Could not create instance: " << to_string(result) << '\n';
     throw std::runtime_error {"Could not create instance"};
+  }
+
+  mDebugMessenger = DebugMessenger::make(mInstance);
+  if (!mDebugMessenger) {
+    throw std::runtime_error {"Could not create debug messenger"};
   }
 
   vkCmdPushDescriptorSetKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetKHR>(

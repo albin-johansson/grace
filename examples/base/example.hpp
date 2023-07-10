@@ -68,6 +68,7 @@ class Example {
 
   Window mWindow;
   Instance mInstance;
+  DebugMessenger mDebugMessenger;
   Surface mSurface;
   VkPhysicalDevice mGPU {VK_NULL_HANDLE};
   Device mDevice;
