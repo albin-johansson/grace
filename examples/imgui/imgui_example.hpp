@@ -44,6 +44,14 @@ class ImGuiExample final : public Example {
 
  private:
   DescriptorPool mDescriptorPool;
+  DescriptorSetLayout mDescriptorSetLayout;
+  PipelineLayout mPipelineLayout;
+  GraphicsPipeline mPipeline;
+  int mThemeIndex {0};
+  bool mUseCustomPipeline {false};
+  bool mShowDemoWindow {true};
+
+  void _record_ui();
 };
 
 }  // namespace grace::examples

@@ -24,8 +24,10 @@
 
 #include "imgui_example.hpp"
 
+#include <cstddef>    // offsetof
 #include <stdexcept>  // runtime_error
 
+#include <glm/glm.hpp>
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_vulkan.h>
@@ -48,6 +50,7 @@ ImGuiExample::ImGuiExample()
   }
 
   ImGui::CreateContext();
+  ImGui::StyleColorsClassic();
 
   if (!ImGui_ImplSDL2_InitForVulkan(mWindow)) {
     throw std::runtime_error {"Could not initialize ImGui SDL2 backend"};
@@ -88,6 +91,53 @@ ImGuiExample::ImGuiExample()
   execute_now(cmd_context, [](VkCommandBuffer cmd_buffer) {
     ImGui_ImplVulkan_CreateFontsTexture(cmd_buffer);
   });
+
+  mDescriptorSetLayout = DescriptorSetLayoutBuilder {mDevice}
+                             .descriptor(0,
+                                         VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                         VK_SHADER_STAGE_FRAGMENT_BIT)
+                             .build();
+  if (!mDescriptorSetLayout) {
+    throw std::runtime_error {"Could not create descriptor set layout"};
+  }
+
+  mPipelineLayout =
+      PipelineLayoutBuilder {mDevice}
+          .descriptor_set_layout(mDescriptorSetLayout)
+          .push_constant(VK_SHADER_STAGE_VERTEX_BIT, 0, 2 * sizeof(glm::vec2))
+          .build();
+  if (!mPipelineLayout) {
+    throw std::runtime_error {"Could not create pipeline layout"};
+  }
+
+  mPipeline =
+      GraphicsPipelineBuilder {mDevice}
+          .with_render_pass(mRenderPass, 0)
+          .with_layout(mPipelineLayout)
+          .with_cache(mPipelineCache)
+          .vertex_shader("shaders/imgui.vert.spv")
+          .fragment_shader("shaders/imgui.frag.spv")
+          .vertex_input_binding(0, sizeof(ImDrawVert))
+          .vertex_attribute(0, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(ImDrawVert, pos))
+          .vertex_attribute(0, 1, VK_FORMAT_R32G32_SFLOAT, offsetof(ImDrawVert, uv))
+          .vertex_attribute(0, 2, VK_FORMAT_R8G8B8A8_UNORM, offsetof(ImDrawVert, col))
+          .primitive_topology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
+          .rasterization(VK_POLYGON_MODE_FILL,
+                         VK_CULL_MODE_NONE,
+                         VK_FRONT_FACE_COUNTER_CLOCKWISE)
+          .depth_test(false)
+          .dynamic_state(VK_DYNAMIC_STATE_VIEWPORT)
+          .dynamic_state(VK_DYNAMIC_STATE_SCISSOR)
+          .color_blend_attachment(true,
+                                  VK_BLEND_OP_ADD,
+                                  VK_BLEND_FACTOR_SRC_ALPHA,
+                                  VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+                                  VK_BLEND_FACTOR_ONE,
+                                  VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA)
+          .build();
+  if (!mPipeline) {
+    throw std::runtime_error {"Could not create pipeline"};
+  }
 }
 
 ImGuiExample::~ImGuiExample() noexcept
@@ -100,19 +150,56 @@ ImGuiExample::~ImGuiExample() noexcept
 void ImGuiExample::record_commands()
 {
   auto& frame = mFrames.at(mFrameIndex);
+  const auto& swapchain_image_extent = mSwapchain.info().image_extent;
 
   auto& io = ImGui::GetIO();
-  io.DisplaySize.x = static_cast<float>(mSwapchain.info().image_extent.width);
-  io.DisplaySize.y = static_cast<float>(mSwapchain.info().image_extent.height);
+  io.DisplaySize.x = static_cast<float>(swapchain_image_extent.width);
+  io.DisplaySize.y = static_cast<float>(swapchain_image_extent.height);
 
   ImGui::NewFrame();
   ImGui_ImplSDL2_NewFrame(mWindow);
   ImGui_ImplVulkan_NewFrame();
 
-  ImGui::ShowDemoWindow();
+  _record_ui();
 
   ImGui::Render();
-  ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), frame.cmd_buffer);
+  ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(),
+                                  frame.cmd_buffer,
+                                  mUseCustomPipeline ? mPipeline : VK_NULL_HANDLE);
+}
+
+void ImGuiExample::_record_ui()
+{
+  if (ImGui::Begin("Options", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+    const auto& io = ImGui::GetIO();
+    ImGui::Text("FPS: %.1f", io.Framerate);
+    ImGui::Text("Frame: %.3f ms", io.DeltaTime * 1'000.0f);
+
+    ImGui::Separator();
+
+    ImGui::AlignTextToFramePadding();
+    ImGui::TextUnformatted("Theme:");
+    ImGui::SameLine();
+    if (ImGui::Combo("##Theme", &mThemeIndex, "Classic\0Dark\0Light\0\0")) {
+      if (mThemeIndex == 0) {
+        ImGui::StyleColorsClassic();
+      }
+      else if (mThemeIndex == 1) {
+        ImGui::StyleColorsDark();
+      }
+      else {
+        ImGui::StyleColorsLight();
+      }
+    }
+
+    ImGui::Checkbox("Use custom pipeline", &mUseCustomPipeline);
+    ImGui::Checkbox("Show demo window", &mShowDemoWindow);
+  }
+  ImGui::End();
+
+  if (mShowDemoWindow) {
+    ImGui::ShowDemoWindow();
+  }
 }
 
 void ImGuiExample::on_event(const SDL_Event& event)
