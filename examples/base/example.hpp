@@ -66,6 +66,8 @@ class Example {
 
   virtual void on_key_pressed([[maybe_unused]] SDL_Scancode key) {}
 
+  virtual void on_event([[maybe_unused]] const SDL_Event& event) {}
+
   Window mWindow;
   Instance mInstance;
   DebugMessenger mDebugMessenger;

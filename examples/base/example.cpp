@@ -291,6 +291,8 @@ void Example::start()
       else if (event.type == SDL_KEYDOWN) {
         on_key_pressed(event.key.keysym.scancode);
       }
+
+      on_event(event);
     }
 
     if (!running) {
