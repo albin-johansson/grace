@@ -245,9 +245,9 @@ auto GraphicsPipelineBuilder::reset() -> Self&
       .with_render_pass(VK_NULL_HANDLE, 0)
       .vertex_shader(nullptr)
       .fragment_shader(nullptr)
-      .primitive_topology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
-      .rasterization(VK_POLYGON_MODE_FILL)
-      .line_width(1.0f)
+      .primitive_topology(kDefaultTopology)
+      .rasterization(kDefaultPolygonMode)
+      .line_width(kDefaultLineWidth)
       .blend_constants(0, 0, 0, 0)
       .depth_bias(false)
       .depth_test(false)
@@ -393,16 +393,16 @@ auto GraphicsPipelineBuilder::color_blend_attachment(
 
 auto GraphicsPipelineBuilder::color_blend_attachment(const bool enabled,
                                                      const VkBlendOp op,
-                                                     const VkBlendFactor src_factor,
-                                                     const VkBlendFactor dst_factor,
+                                                     const VkBlendFactor src_color_factor,
+                                                     const VkBlendFactor dst_color_factor,
                                                      const VkBlendFactor src_alpha_factor,
                                                      const VkBlendFactor dst_alpha_factor)
     -> Self&
 {
   return color_blend_attachment(VkPipelineColorBlendAttachmentState {
       .blendEnable = enabled ? VK_TRUE : VK_FALSE,
-      .srcColorBlendFactor = src_factor,
-      .dstColorBlendFactor = dst_factor,
+      .srcColorBlendFactor = src_color_factor,
+      .dstColorBlendFactor = dst_color_factor,
       .colorBlendOp = op,
       .srcAlphaBlendFactor = src_alpha_factor,
       .dstAlphaBlendFactor = dst_alpha_factor,

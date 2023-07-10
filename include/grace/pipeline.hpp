@@ -121,6 +121,16 @@ class GraphicsPipelineBuilder final {
  public:
   using Self = GraphicsPipelineBuilder;
 
+  inline static constexpr auto kDefaultTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+  inline static constexpr auto kDefaultPolygonMode = VK_POLYGON_MODE_FILL;
+  inline static constexpr auto kDefaultCullMode = VK_CULL_MODE_NONE;
+  inline static constexpr auto kDefaultFrontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+  inline static constexpr auto kDefaultDepthCompareOp = VK_COMPARE_OP_LESS;
+  inline static constexpr auto kDefaultColorLogicOp = VK_LOGIC_OP_NO_OP;
+  inline static constexpr float kDefaultLineWidth = 1.0f;
+  inline static constexpr float kDefaultMinDepth = 0.0f;
+  inline static constexpr float kDefaultMaxDepth = 1.0f;
+
   explicit GraphicsPipelineBuilder(VkDevice device);
 
   /**
@@ -257,7 +267,7 @@ class GraphicsPipelineBuilder final {
    * \details The following values are used by the builder by default.
    * <ul>
    *   <li>The polygon mode is `VK_POLYGON_MODE_FILL`.</li>
-   *   <li>The cull mode is `VK_CULL_MODE_BACK_BIT`.</li>
+   *   <li>The cull mode is `VK_CULL_MODE_NONE`.</li>
    *   <li>The front face is `VK_FRONT_FACE_COUNTER_CLOCKWISE`.</li>
    * </ul>
    *
@@ -268,10 +278,10 @@ class GraphicsPipelineBuilder final {
    * \return the pipeline builder itself.
    */
   auto rasterization(VkPolygonMode polygon_mode,
-                     VkCullModeFlags cull_mode = VK_CULL_MODE_BACK_BIT,
-                     VkFrontFace front_face = VK_FRONT_FACE_COUNTER_CLOCKWISE) -> Self&;
+                     VkCullModeFlags cull_mode = kDefaultCullMode,
+                     VkFrontFace front_face = kDefaultFrontFace) -> Self&;
 
-  auto color_logic_op(bool enabled, VkLogicOp op = VK_LOGIC_OP_NO_OP) -> Self&;
+  auto color_logic_op(bool enabled, VkLogicOp op = kDefaultColorLogicOp) -> Self&;
 
   auto blend_constants(float red, float green, float blue, float alpha) -> Self&;
 
@@ -281,8 +291,8 @@ class GraphicsPipelineBuilder final {
   auto color_blend_attachment(
       bool enabled,
       VkBlendOp op = VK_BLEND_OP_ADD,
-      VkBlendFactor src_factor = VK_BLEND_FACTOR_ONE,
-      VkBlendFactor dst_factor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+      VkBlendFactor src_color_factor = VK_BLEND_FACTOR_SRC_ALPHA,
+      VkBlendFactor dst_color_factor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
       VkBlendFactor src_alpha_factor = VK_BLEND_FACTOR_ONE,
       VkBlendFactor dst_alpha_factor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA) -> Self&;
 
@@ -324,7 +334,7 @@ class GraphicsPipelineBuilder final {
    *
    * \return the pipeline builder itself.
    */
-  auto depth_test(bool enabled, VkCompareOp compare_op = VK_COMPARE_OP_LESS) -> Self&;
+  auto depth_test(bool enabled, VkCompareOp compare_op = kDefaultDepthCompareOp) -> Self&;
 
   /**
    * Controls depth bounds testing.
@@ -423,10 +433,10 @@ class GraphicsPipelineBuilder final {
   [[nodiscard]] auto get_dynamic_state_info() const -> VkPipelineDynamicStateCreateInfo;
 
  private:
-  VkDevice mDevice;
-  VkPipelineLayout mLayout;
-  VkPipelineCache mCache;
-  VkRenderPass mRenderPass;
+  VkDevice mDevice {VK_NULL_HANDLE};
+  VkPipelineLayout mLayout {VK_NULL_HANDLE};
+  VkPipelineCache mCache {VK_NULL_HANDLE};
+  VkRenderPass mRenderPass {VK_NULL_HANDLE};
 
   std::string mVertexShaderPath;
   std::string mFragmentShaderPath;
@@ -440,31 +450,31 @@ class GraphicsPipelineBuilder final {
 
   std::optional<uint32> mTessellationPatchControlPoints;
 
-  uint32 mSubpass;
-  VkPrimitiveTopology mPrimitiveTopology;
-  VkPolygonMode mPolygonMode;
-  VkCullModeFlags mCullMode;
-  VkFrontFace mFrontFace;
-  VkCompareOp mDepthCompareOp;
-  VkStencilOpState mFrontStencilOpState;
-  VkStencilOpState mBackStencilOpState;
-  VkLogicOp mColorLogicOp;
+  uint32 mSubpass {0};
+  VkPrimitiveTopology mPrimitiveTopology {kDefaultTopology};
+  VkPolygonMode mPolygonMode {kDefaultPolygonMode};
+  VkCullModeFlags mCullMode {kDefaultCullMode};
+  VkFrontFace mFrontFace {kDefaultFrontFace};
+  VkCompareOp mDepthCompareOp {kDefaultDepthCompareOp};
+  VkLogicOp mColorLogicOp {kDefaultColorLogicOp};
+  VkStencilOpState mFrontStencilOpState {};
+  VkStencilOpState mBackStencilOpState {};
 
-  float mLineWidth;
-  float mDepthBiasConstantFactor;
-  float mDepthBiasSlopeFactor;
-  float mDepthBiasClampValue;
-  float mMinDepth;
-  float mMaxDepth;
-  std::array<float, 4> mBlendConstants;
+  float mLineWidth {kDefaultLineWidth};
+  float mDepthBiasConstantFactor {};
+  float mDepthBiasSlopeFactor {};
+  float mDepthBiasClampValue {};
+  float mMinDepth {kDefaultMinDepth};
+  float mMaxDepth {kDefaultMaxDepth};
+  std::array<float, 4> mBlendConstants {};
 
-  bool mDepthBiasEnabled       : 1;
-  bool mDepthTestEnabled       : 1;
-  bool mDepthWriteEnabled      : 1;
-  bool mDepthBoundsTestEnabled : 1;
-  bool mDepthClampEnabled      : 1;
-  bool mStencilTestEnabled     : 1;
-  bool mColorLogicOpEnabled    : 1;
+  bool mDepthBiasEnabled       : 1 {false};
+  bool mDepthTestEnabled       : 1 {false};
+  bool mDepthWriteEnabled      : 1 {false};
+  bool mDepthBoundsTestEnabled : 1 {false};
+  bool mDepthClampEnabled      : 1 {false};
+  bool mStencilTestEnabled     : 1 {false};
+  bool mColorLogicOpEnabled    : 1 {false};
 
   [[nodiscard]] auto _is_complete() const -> bool;
 };

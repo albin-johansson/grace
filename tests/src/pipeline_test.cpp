@@ -261,7 +261,7 @@ TEST_F(PipelineFixture, GraphicsPipelineBuilderDefaults)
     EXPECT_EQ(rasterization_state.pNext, nullptr);
     EXPECT_EQ(rasterization_state.flags, 0);
     EXPECT_EQ(rasterization_state.polygonMode, VK_POLYGON_MODE_FILL);
-    EXPECT_EQ(rasterization_state.cullMode, VK_CULL_MODE_BACK_BIT);
+    EXPECT_EQ(rasterization_state.cullMode, VK_CULL_MODE_NONE);
     EXPECT_EQ(rasterization_state.frontFace, VK_FRONT_FACE_COUNTER_CLOCKWISE);
     EXPECT_EQ(rasterization_state.rasterizerDiscardEnable, VK_FALSE);
     EXPECT_EQ(rasterization_state.depthClampEnable, VK_FALSE);

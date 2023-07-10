@@ -128,12 +128,7 @@ ImGuiExample::ImGuiExample()
           .depth_test(false)
           .dynamic_state(VK_DYNAMIC_STATE_VIEWPORT)
           .dynamic_state(VK_DYNAMIC_STATE_SCISSOR)
-          .color_blend_attachment(true,
-                                  VK_BLEND_OP_ADD,
-                                  VK_BLEND_FACTOR_SRC_ALPHA,
-                                  VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
-                                  VK_BLEND_FACTOR_ONE,
-                                  VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA)
+          .color_blend_attachment(true)
           .build();
   if (!mPipeline) {
     throw std::runtime_error {"Could not create pipeline"};
