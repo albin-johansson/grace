@@ -338,11 +338,18 @@ void Example::_render()
 {
   auto& frame = mFrames.at(mFrameIndex);
 
-  const auto cmd_buffer_begin_info = make_command_buffer_begin_info();
-  vkResetCommandBuffer(frame.cmd_buffer, 0);
-  vkBeginCommandBuffer(frame.cmd_buffer, &cmd_buffer_begin_info);
+  if (const auto result = vkResetCommandBuffer(frame.cmd_buffer, 0);
+      result != VK_SUCCESS) {
+    std::cerr << "vkResetCommandBuffer failed: " << to_string(result) << '\n';
+  }
 
-  std::array<VkClearValue, 2> clear_values = {};
+  const auto cmd_buffer_begin_info = make_command_buffer_begin_info();
+  if (const auto result = vkBeginCommandBuffer(frame.cmd_buffer, &cmd_buffer_begin_info);
+      result != VK_SUCCESS) {
+    std::cerr << "vkBeginCommandBuffer failed: " << to_string(result) << '\n';
+  }
+
+  VkClearValue clear_values[2] = {};
   clear_values[0].color = VkClearColorValue {.float32 = {0.0f, 0.0f, 0.2f, 1.0f}};
   clear_values[1].depthStencil = VkClearDepthStencilValue {1.0f, 0};
 
@@ -351,7 +358,7 @@ void Example::_render()
       make_render_pass_begin_info(mRenderPass,
                                   mSwapchain.get_current_framebuffer(),
                                   {VkOffset2D {0, 0}, image_extent},
-                                  clear_values.data(),
+                                  clear_values,
                                   u32_size(clear_values));
   vkCmdBeginRenderPass(frame.cmd_buffer,
                        &render_pass_begin_info,
@@ -369,7 +376,10 @@ void Example::_render()
   record_commands();
 
   vkCmdEndRenderPass(frame.cmd_buffer);
-  vkEndCommandBuffer(frame.cmd_buffer);
+
+  if (const auto result = vkEndCommandBuffer(frame.cmd_buffer); result != VK_SUCCESS) {
+    std::cerr << "vkEndCommandBuffer failed: " << to_string(result) << '\n';
+  }
 }
 
 void Example::_submit_commands()
@@ -387,10 +397,10 @@ void Example::_submit_commands()
   const auto submit_info = make_submit_info(&frame.cmd_buffer,
                                             1,
                                             wait_semaphores,
-                                            1,
+                                            u32_size(wait_semaphores),
                                             &wait_stage,
                                             signal_semaphores,
-                                            1);
+                                            u32_size(signal_semaphores));
   const auto submit_result =
       vkQueueSubmit(mGraphicsQueue, 1, &submit_info, frame.in_flight_fence);
 
@@ -405,7 +415,8 @@ void Example::_present_image()
   auto& frame = mFrames.at(mFrameIndex);
 
   const VkSemaphore wait_semaphores[] = {frame.render_finished_semaphore};
-  const auto present_result = mSwapchain.present_image(mPresentQueue, wait_semaphores, 1);
+  const auto present_result =
+      mSwapchain.present_image(mPresentQueue, wait_semaphores, u32_size(wait_semaphores));
 
   if (present_result == VK_SUCCESS) {
     return;
