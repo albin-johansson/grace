@@ -24,6 +24,8 @@
 
 #pragma once
 
+#include <vector>  // vector
+
 #include <glm/glm.hpp>
 #include <grace/grace.hpp>
 #include <vulkan/vulkan.h>
@@ -47,6 +49,10 @@ class TriangleExample final : public Example {
     glm::mat4 model_matrix {1.0f};
   };
 
+  struct ExtensionFunctions final {
+    PFN_vkCmdPushDescriptorSetKHR vkCmdPushDescriptorSetKHR {nullptr};
+  };
+
  public:
   TriangleExample();
 
@@ -54,6 +60,23 @@ class TriangleExample final : public Example {
   void record_commands() override;
 
  private:
+  ExtensionFunctions mFunctions;
+  DescriptorSetLayout mDescriptorSetLayout;
+  PipelineLayout mPipelineLayout;
+  GraphicsPipeline mPipeline;
+  std::vector<Buffer> mMatrixBuffers;
+  Buffer mTriangleVertexBuffer;
+  Buffer mTriangleIndexBuffer;
+  Matrices mMatrices;
+  PushConstants mPushConstants;
+  glm::vec3 mCameraPos {0, 0, -2.5f};
+  glm::vec3 mCameraDir {0, 0, 1};
+  glm::vec3 mWorldUp {0, 1, 0};
+  float mFOV {60};
+  float mNearPlane {0.1f};
+  float mFarPlane {10'000};
 };
 
 }  // namespace grace::examples
+
+GRACE_EXAMPLE_DEFINE_MAIN(grace::examples::TriangleExample)
