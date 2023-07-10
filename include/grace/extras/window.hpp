@@ -70,6 +70,8 @@ class Window final {
   std::unique_ptr<SDL_Window, WindowDeleter> mWindow;
 };
 
+void enable_dark_title_bar(SDL_Window* window);
+
 }  // namespace grace
 
 #endif  // GRACE_USE_SDL2

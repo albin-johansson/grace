@@ -26,6 +26,13 @@
 
 #ifdef GRACE_USE_SDL2
 
+#include <memory>  // unique_ptr
+
+#ifdef _MSC_VER
+#include <SDL_syswm.h>
+#include <dwmapi.h>
+#endif  // _MSC_VER
+
 #include "grace/common.hpp"
 
 namespace grace {
@@ -77,6 +84,34 @@ auto Window::make(const char* title,
                                   width,
                                   height,
                                   flags)};
+}
+
+void enable_dark_title_bar([[maybe_unused]] SDL_Window* window)
+{
+#ifdef _MSC_VER
+  SDL_SysWMinfo wm_info = {};
+  SDL_VERSION(&wm_info.version)
+
+  if (SDL_GetWindowWMInfo(window, &wm_info) && wm_info.subsystem == SDL_SYSWM_WINDOWS) {
+    auto object_deleter = [](void* obj) { SDL_UnloadObject(obj); };
+    using UniqueObject = std::unique_ptr<void, decltype(object_deleter)>;
+
+    UniqueObject dwmapi {SDL_LoadObject("dwmapi.dll")};
+    if (!dwmapi) {
+      return;
+    }
+
+    using DwmSetWindowAttributeFn = HRESULT (*)(HWND, DWORD, LPCVOID, DWORD);
+    auto DwmSetWindowAttribute = reinterpret_cast<DwmSetWindowAttributeFn>(
+        SDL_LoadFunction(dwmapi.get(), "DwmSetWindowAttribute"));
+
+    if (DwmSetWindowAttribute) {
+      HWND hwnd = wm_info.info.win.window;
+      BOOL mode = 1;
+      DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &mode, sizeof mode);
+    }
+  }
+#endif  // _MSC_VER
 }
 
 }  // namespace grace
