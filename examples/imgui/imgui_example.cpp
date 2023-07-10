@@ -121,11 +121,6 @@ ImGuiExample::ImGuiExample()
           .vertex_attribute(0, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(ImDrawVert, pos))
           .vertex_attribute(0, 1, VK_FORMAT_R32G32_SFLOAT, offsetof(ImDrawVert, uv))
           .vertex_attribute(0, 2, VK_FORMAT_R8G8B8A8_UNORM, offsetof(ImDrawVert, col))
-          .primitive_topology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
-          .rasterization(VK_POLYGON_MODE_FILL,
-                         VK_CULL_MODE_NONE,
-                         VK_FRONT_FACE_COUNTER_CLOCKWISE)
-          .depth_test(false)
           .dynamic_state(VK_DYNAMIC_STATE_VIEWPORT)
           .dynamic_state(VK_DYNAMIC_STATE_SCISSOR)
           .color_blend_attachment(true)
