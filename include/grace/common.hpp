@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include <array>    // size
 #include <cstddef>  // size_t
 #include <cstdint>  // uint32_t, uint64_t
 #include <limits>   // numeric_limits
@@ -46,6 +47,12 @@ template <typename Container>
 [[nodiscard]] constexpr auto u32_size(const Container& container) -> uint32
 {
   return static_cast<uint32>(container.size());
+}
+
+template <typename T, usize N>
+[[nodiscard]] constexpr auto u32_size(const T (&array)[N]) -> uint32
+{
+  return static_cast<uint32>(std::size(array));
 }
 
 template <typename Container>
