@@ -24,7 +24,6 @@
 
 #include "example.hpp"
 
-#include <array>      // array
 #include <stdexcept>  // runtime_error
 
 namespace grace::examples {
@@ -183,18 +182,24 @@ Example::Example(const char* name)
     throw std::runtime_error {"Could not create swapchain"};
   }
 
+  // This makes the swapchain include a depth buffer during recreation.
   mSwapchain.info().uses_depth_buffer = true;
 
-  const auto subpass_stages = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
-                              VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-  const auto main_subpass_access =
-      VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-  const auto main_subpass_dependency = make_subpass_dependency(VK_SUBPASS_EXTERNAL,
-                                                               0,
-                                                               subpass_stages,
-                                                               subpass_stages,
-                                                               0,
-                                                               main_subpass_access);
+  const VkPipelineStageFlags subpass_pipeline_stages =
+      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+      VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT |
+      VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+  const VkAccessFlags dst_subpass_access = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
+                                           VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
+                                           VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT |
+                                           VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+  const auto dependency = make_subpass_dependency(VK_SUBPASS_EXTERNAL,
+                                                  0,
+                                                  subpass_pipeline_stages,
+                                                  subpass_pipeline_stages,
+                                                  0,
+                                                  dst_subpass_access);
+
   mRenderPass = RenderPassBuilder {mDevice}
                     .color_attachment(mSwapchain.info().image_format)
                     .depth_attachment(mSwapchain.info().depth_buffer_format)
@@ -202,7 +207,7 @@ Example::Example(const char* name)
                     .use_color_attachment(0)
                     .use_depth_attachment(1)
                     .end_subpass()
-                    .subpass_dependency(main_subpass_dependency)
+                    .subpass_dependency(dependency)
                     .build(&result);
   if (!mRenderPass) {
     std::cerr << "Could not create render pass: " << to_string(result) << '\n';
@@ -353,8 +358,8 @@ void Example::_render()
   }
 
   VkClearValue clear_values[2] = {};
-  clear_values[0].color = VkClearColorValue {.float32 = {0.0f, 0.0f, 0.2f, 1.0f}};
-  clear_values[1].depthStencil = VkClearDepthStencilValue {1.0f, 0};
+  clear_values[0].color = VkClearColorValue {.float32 = {0, 0, 0, 1}};
+  clear_values[1].depthStencil = VkClearDepthStencilValue {.depth = 1, .stencil = 0};
 
   const auto image_extent = mSwapchain.info().image_extent;
   const auto render_pass_begin_info =
