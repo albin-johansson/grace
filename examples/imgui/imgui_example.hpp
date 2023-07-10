@@ -48,7 +48,7 @@ class ImGuiExample final : public Example {
   PipelineLayout mPipelineLayout;
   GraphicsPipeline mPipeline;
   int mThemeIndex {0};
-  bool mUseCustomPipeline {false};
+  bool mUseCustomPipeline {true};
   bool mShowDemoWindow {true};
 
   void _record_ui();
