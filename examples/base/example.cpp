@@ -111,12 +111,6 @@ Example::Example(const char* name)
     throw std::runtime_error {"Could not create debug messenger"};
   }
 
-  vkCmdPushDescriptorSetKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetKHR>(
-      vkGetInstanceProcAddr(mInstance, "vkCmdPushDescriptorSetKHR"));
-  if (!vkCmdPushDescriptorSetKHR) {
-    throw std::runtime_error {"Could not load vkCmdPushDescriptorSetKHR function"};
-  }
-
   mSurface = Surface::make(mWindow, mInstance);
   if (!mSurface) {
     throw std::runtime_error {"Could not create surface"};
@@ -273,6 +267,12 @@ Example::Example(const char* name)
                 << '\n';
       throw std::runtime_error {"Could not create render_finished_semaphore"};
     }
+  }
+
+  mFunctions.vkCmdPushDescriptorSetKHR =
+      get_function<PFN_vkCmdPushDescriptorSetKHR>(mDevice, "vkCmdPushDescriptorSetKHR");
+  if (!mFunctions.vkCmdPushDescriptorSetKHR) {
+    throw std::runtime_error {"Could not load vkCmdPushDescriptorSetKHR function"};
   }
 
   _recreate_swapchain();

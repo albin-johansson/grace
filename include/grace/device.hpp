@@ -63,6 +63,12 @@ struct DeviceQueueCreateInfos final {
     const VkPhysicalDeviceFeatures* enabled_features = nullptr,
     const void* next = nullptr) -> VkDeviceCreateInfo;
 
+template <typename T>
+[[nodiscard]] auto get_function(VkDevice device, const char* name) -> T
+{
+  return reinterpret_cast<T>(vkGetDeviceProcAddr(device, name));
+}
+
 class Device final {
  public:
   /**

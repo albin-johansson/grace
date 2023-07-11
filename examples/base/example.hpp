@@ -52,6 +52,10 @@ struct Frame final {
 };
 
 class Example {
+  struct ExtensionFunctions final {
+    PFN_vkCmdPushDescriptorSetKHR vkCmdPushDescriptorSetKHR {nullptr};
+  };
+
  public:
   explicit Example(const char* name);
 
@@ -85,7 +89,7 @@ class Example {
   std::vector<Frame> mFrames;
   uint32 mFrameIndex {0};
 
-  PFN_vkCmdPushDescriptorSetKHR vkCmdPushDescriptorSetKHR {nullptr};
+  ExtensionFunctions mFunctions;
 
  private:
   [[nodiscard]] auto _try_acquire_image() -> bool;

@@ -68,6 +68,12 @@ using UniqueInstance = std::unique_ptr<VkInstance_T, InstanceDeleter>;
 
 #endif  // GRACE_USE_SDL2
 
+template <typename T>
+[[nodiscard]] auto get_function(VkInstance instance, const char* name) -> T
+{
+  return reinterpret_cast<T>(vkGetInstanceProcAddr(instance, name));
+}
+
 class Instance final {
  public:
   /**

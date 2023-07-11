@@ -34,12 +34,6 @@ namespace grace::examples {
 TriangleExample::TriangleExample()
     : Example {"Triangle Example"}
 {
-  mFunctions.vkCmdPushDescriptorSetKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetKHR>(
-      vkGetDeviceProcAddr(mDevice, "vkCmdPushDescriptorSetKHR"));
-  if (!mFunctions.vkCmdPushDescriptorSetKHR) {
-    throw std::runtime_error {"Could not load vkCmdPushDescriptorSetKHR function"};
-  }
-
   VkResult result = VK_ERROR_UNKNOWN;
 
   mDescriptorSetLayout =

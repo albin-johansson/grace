@@ -49,10 +49,6 @@ class TriangleExample final : public Example {
     glm::mat4 model_matrix {1.0f};
   };
 
-  struct ExtensionFunctions final {
-    PFN_vkCmdPushDescriptorSetKHR vkCmdPushDescriptorSetKHR {nullptr};
-  };
-
  public:
   TriangleExample();
 
@@ -60,7 +56,6 @@ class TriangleExample final : public Example {
   void record_commands() override;
 
  private:
-  ExtensionFunctions mFunctions;
   DescriptorSetLayout mDescriptorSetLayout;
   PipelineLayout mPipelineLayout;
   GraphicsPipeline mPipeline;
