@@ -178,10 +178,11 @@ class GraphicsPipelineBuilder final {
    * \note This function must be called in order to be able to build the pipeline.
    *
    * \param shader_path the file path to the compiled vertex shader.
+   * \param entry_name  the name of the entry point function.
    *
    * \return the pipeline builder itself.
    */
-  auto vertex_shader(const char* shader_path) -> Self&;
+  auto vertex_shader(const char* shader_path, const char* entry_name = "main") -> Self&;
 
   /**
    * Specifies the fragment shader that will be used.
@@ -189,10 +190,11 @@ class GraphicsPipelineBuilder final {
    * \note This function must be called in order to be able to build the pipeline.
    *
    * \param shader_path the file path to the compiled fragment shader.
+   * \param entry_name  the name of the entry point function.
    *
    * \return the pipeline builder itself.
    */
-  auto fragment_shader(const char* shader_path) -> Self&;
+  auto fragment_shader(const char* shader_path, const char* entry_name = "main") -> Self&;
 
   auto vertex_input_binding(uint32 binding,
                             uint32 stride,
@@ -434,13 +436,18 @@ class GraphicsPipelineBuilder final {
   [[nodiscard]] auto get_dynamic_state_info() const -> VkPipelineDynamicStateCreateInfo;
 
  private:
+  struct ShaderInfo final {
+    std::string path;
+    std::string entry_name;
+  };
+
   VkDevice mDevice {VK_NULL_HANDLE};
   VkPipelineLayout mLayout {VK_NULL_HANDLE};
   VkPipelineCache mCache {VK_NULL_HANDLE};
   VkRenderPass mRenderPass {VK_NULL_HANDLE};
 
-  std::string mVertexShaderPath;
-  std::string mFragmentShaderPath;
+  ShaderInfo mVertexShader;
+  ShaderInfo mFragmentShader;
 
   std::vector<VkVertexInputBindingDescription> mVertexInputBindings;
   std::vector<VkVertexInputAttributeDescription> mVertexAttributes;

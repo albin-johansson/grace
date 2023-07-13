@@ -278,15 +278,19 @@ auto GraphicsPipelineBuilder::with_render_pass(VkRenderPass render_pass,
   return *this;
 }
 
-auto GraphicsPipelineBuilder::vertex_shader(const char* shader_path) -> Self&
+auto GraphicsPipelineBuilder::vertex_shader(const char* shader_path,
+                                            const char* entry_name) -> Self&
 {
-  mVertexShaderPath = shader_path ? shader_path : std::string {};
+  mVertexShader.path = shader_path ? shader_path : std::string {};
+  mVertexShader.entry_name = entry_name ? entry_name : "main";
   return *this;
 }
 
-auto GraphicsPipelineBuilder::fragment_shader(const char* shader_path) -> Self&
+auto GraphicsPipelineBuilder::fragment_shader(const char* shader_path,
+                                              const char* entry_name) -> Self&
 {
-  mFragmentShaderPath = shader_path ? shader_path : std::string {};
+  mFragmentShader.path = shader_path ? shader_path : std::string {};
+  mFragmentShader.entry_name = entry_name ? entry_name : "main";
   return *this;
 }
 
@@ -492,12 +496,13 @@ auto GraphicsPipelineBuilder::build(VkResult* result) const -> GraphicsPipeline
     return {};
   }
 
-  auto vertex_shader = ShaderModule::read(mDevice, mVertexShaderPath.c_str(), result);
+  auto vertex_shader = ShaderModule::read(mDevice, mVertexShader.path.c_str(), result);
   if (!vertex_shader) {
     return {};
   }
 
-  auto fragment_shader = ShaderModule::read(mDevice, mFragmentShaderPath.c_str(), result);
+  auto fragment_shader =
+      ShaderModule::read(mDevice, mFragmentShader.path.c_str(), result);
   if (!fragment_shader) {
     return {};
   }
@@ -507,12 +512,16 @@ auto GraphicsPipelineBuilder::build(VkResult* result) const -> GraphicsPipeline
   pipeline_info.flags = 0;
   pipeline_info.pNext = nullptr;
 
-  // TODO shader customization (specializations, entry name)
+  // TODO shader customization (specialization constants)
   VkPipelineShaderStageCreateInfo shader_stages[2] = {};
-  shader_stages[0] =
-      make_pipeline_shader_stage_info(VK_SHADER_STAGE_VERTEX_BIT, vertex_shader);
-  shader_stages[1] =
-      make_pipeline_shader_stage_info(VK_SHADER_STAGE_FRAGMENT_BIT, fragment_shader);
+  shader_stages[0] = make_pipeline_shader_stage_info(VK_SHADER_STAGE_VERTEX_BIT,
+                                                     vertex_shader,
+                                                     nullptr,
+                                                     mVertexShader.entry_name.c_str());
+  shader_stages[1] = make_pipeline_shader_stage_info(VK_SHADER_STAGE_FRAGMENT_BIT,
+                                                     fragment_shader,
+                                                     nullptr,
+                                                     mFragmentShader.entry_name.c_str());
 
   const auto vertex_input_state = get_vertex_input_state_info();
   const auto input_assembly_state = get_input_assembly_state_info();
@@ -557,8 +566,8 @@ auto GraphicsPipelineBuilder::_is_complete() const -> bool
 {
   return mLayout != VK_NULL_HANDLE &&      //
          mRenderPass != VK_NULL_HANDLE &&  //
-         !mVertexShaderPath.empty() &&     //
-         !mFragmentShaderPath.empty();
+         !mVertexShader.path.empty() &&    //
+         !mFragmentShader.path.empty();
 }
 
 auto GraphicsPipelineBuilder::get_vertex_input_state_info() const
