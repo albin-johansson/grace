@@ -103,17 +103,31 @@ auto Framebuffer::make(VkDevice device,
 
 auto Framebuffer::make(VkDevice device,
                        VkRenderPass render_pass,
+                       const VkImageView* attachments,
+                       const uint32 attachment_count,
+                       const VkExtent2D& extent,
+                       VkResult* result) -> Framebuffer
+{
+  const auto fb_info =
+      make_framebuffer_info(render_pass, extent, attachments, attachment_count);
+  return Framebuffer::make(device, fb_info, result);
+}
+
+auto Framebuffer::make(VkDevice device,
+                       VkRenderPass render_pass,
                        VkImageView color_buffer,
                        VkImageView depth_buffer,
                        const VkExtent2D& extent,
                        VkResult* result) -> Framebuffer
 {
   const VkImageView attachments[] = {color_buffer, depth_buffer};
-  const auto fb_info = make_framebuffer_info(render_pass,
-                                             extent,
-                                             attachments,
-                                             (depth_buffer != VK_NULL_HANDLE) ? 2 : 1);
-  return Framebuffer::make(device, fb_info, result);
+  const uint32 attachment_count = (depth_buffer != VK_NULL_HANDLE) ? 2 : 1;
+  return Framebuffer::make(device,
+                           render_pass,
+                           attachments,
+                           attachment_count,
+                           extent,
+                           result);
 }
 
 }  // namespace grace

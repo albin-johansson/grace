@@ -43,13 +43,20 @@ class Framebuffer final {
   Framebuffer(Framebuffer&& other) noexcept;
   Framebuffer(const Framebuffer& other) = delete;
 
-  Framebuffer& operator=(Framebuffer&& other) noexcept;
-  Framebuffer& operator=(const Framebuffer& other) = delete;
+  auto operator=(Framebuffer&& other) noexcept -> Framebuffer&;
+  auto operator=(const Framebuffer& other) -> Framebuffer& = delete;
 
   ~Framebuffer() noexcept;
 
   [[nodiscard]] static auto make(VkDevice device,
                                  const VkFramebufferCreateInfo& fb_info,
+                                 VkResult* result = nullptr) -> Framebuffer;
+
+  [[nodiscard]] static auto make(VkDevice device,
+                                 VkRenderPass render_pass,
+                                 const VkImageView* attachments,
+                                 uint32 attachment_count,
+                                 const VkExtent2D& extent,
                                  VkResult* result = nullptr) -> Framebuffer;
 
   [[nodiscard]] static auto make(VkDevice device,
