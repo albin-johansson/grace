@@ -57,7 +57,7 @@ namespace grace {
                                    const VkExtent3D& extent,
                                    VkFormat format,
                                    VkImageUsageFlags usage,
-                                   uint32 mip_levels,
+                                   uint32 mip_levels = 1,
                                    VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT)
     -> VkImageCreateInfo;
 
@@ -93,8 +93,8 @@ class Image final {
   Image(Image&& other) noexcept;
   Image(const Image& other) = delete;
 
-  Image& operator=(Image&& other) noexcept;
-  Image& operator=(const Image& other) = delete;
+  auto operator=(Image&& other) noexcept -> Image&;
+  auto operator=(const Image& other) -> Image& = delete;
 
   ~Image() noexcept;
 
@@ -135,7 +135,7 @@ class Image final {
                                  const VkExtent3D& extent,
                                  VkFormat format,
                                  VkImageUsageFlags usage,
-                                 uint32 mip_levels,
+                                 uint32 mip_levels = 1,
                                  VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT,
                                  VkResult* result = nullptr) -> Image;
 

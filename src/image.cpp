@@ -180,7 +180,7 @@ Image::Image(Image&& other) noexcept
   other.mAllocation = VK_NULL_HANDLE;
 }
 
-Image& Image::operator=(Image&& other) noexcept
+auto Image::operator=(Image&& other) noexcept -> Image&
 {
   if (this != &other) {
     destroy();
